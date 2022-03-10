@@ -14,6 +14,7 @@ string getNumber(vector<string>dataLabel,int labelIndex,string instructionLine){
     }
     return dataLabel[size-1];
 }
+
 void findDataLabel(vector<string>trimmedInstruction[],int dataStart, int textStart){
     int instructionNumber=getNumberOfInstruction();
     int dataEnd=0;

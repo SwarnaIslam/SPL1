@@ -9,6 +9,9 @@ void addu(){
 void addi(){
 
 }
+void li(){
+
+}
 void move(vector<string>command,string instructionLine){
     if(command.size()!=3){
         reportAndExit("Invalid operation in text section",instructionLine);
@@ -19,15 +22,12 @@ void move(vector<string>command,string instructionLine){
     cout<<"Details of this operation:"<<endl;
     cout<<"add"<<" "<<command[1]<<" "<<"$zero"<<" "<<command[2]<<endl;
 }
-void perform(int instructionNum,vector<string>command,string instructionLine){
-    switch (instructionNum)
-    {
-    case 10:
+void perform(long long hashOfOp,vector<string>command,string instructionLine){
+    if(hashOfOp==getHashValue("move")){
         move(command,instructionLine);
-        break;
-    
-    default:
-        break;
+    }
+    else if(hashOfOp==getHashValue("li")){
+        li();
     }
 }
 void executeInstruction(vector<string>trimmedInstruction[]){
@@ -55,9 +55,11 @@ void executeInstruction(vector<string>trimmedInstruction[]){
         vector<string>operators{"li","la","add","addi","mul","div","j","jal","bne","beq","move","syscall"};
         bool operatorFound=false;
         int instructionNum=0;
+        long long hashOfTempOp=getHashValue(tempOperator);
         instructionLine=to_string(i+1);
         for(int j=0;j<operators.size();j++){
-            if(operators[j]==tempOperator){
+            long long hashOfOp=getHashValue(operators[j]);
+            if(hashOfOp==hashOfTempOp){
                 operatorFound=true;
                 instructionNum=j;
                 break;
@@ -71,7 +73,7 @@ void executeInstruction(vector<string>trimmedInstruction[]){
             reportAndExit("Invalid operation in text section",instructionLine);
         }
         else{
-            perform(instructionNum,trimmedInstruction[i],to_string(i+1));
+            perform(hashOfTempOp,trimmedInstruction[i],to_string(i+1));
         }
     }
 }

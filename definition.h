@@ -9,6 +9,18 @@ vector<string>keywords;
 vector<string>registers;
 map<string,int>dataLabel;
 map<string,int>textLabel;
+long long getHashValue(string operation){
+    int p = 31;
+    long long mod = 1e9 + 9;
+    long long power_of_p = 1;
+    long long hashValue = 0;
+
+    for (int i = 0;operation[i]!='\0'; i++) {
+        hashValue= (hashValue+ (operation[i] - 'a' + 1) * power_of_p)% mod;
+        power_of_p= (power_of_p * p) % mod;
+    }
+    return (hashValue%mod + mod) % mod;
+}
 void setDataLabel(string labelName,int line){
     dataLabel[labelName]=line;
 }

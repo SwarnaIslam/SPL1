@@ -6,17 +6,23 @@ using namespace std;
 int numberOfInstruction;
 int dataIndex,textIndex;
 vector<string>keywords;
-vector<string>registers;
 map<string,int>dataLabel;
 map<string,int>textLabel;
+struct Reg{
+    string regName;
+    int32_t value;
+};
+Reg registers[200000];
 long long getHashValue(string operation){
-    int p = 31;
+    int p = 37;
     long long mod = 1e9 + 9;
     long long power_of_p = 1;
     long long hashValue = 0;
-
+    //cout<<operation<<endl;
+    if(operation=="$zero")return 0;
     for (int i = 0;operation[i]!='\0'; i++) {
-        hashValue= (hashValue+ (operation[i] - 'a' + 1) * power_of_p)% mod;
+        hashValue= (hashValue+ (operation[i] - '$' + 1) * power_of_p)% mod;
+        //cout<<hashValue<<" "<<power_of_p<<" "<<operation[i]-'$'<<" "<<operation[i]<<endl;
         power_of_p= (power_of_p * p) % mod;
     }
     return (hashValue%mod + mod) % mod;
@@ -45,12 +51,13 @@ vector<string> getKeywords(){
 void defineRegisters(){
     vector<string>tempRegister{"$zero","$at","$v0","$v1","$a0","$a1","$a2","$a3","$t0","$t1","$t2","$t3","$t4","$t5","$t6","$t7","$s0","$s1","$s2","$s3","$s4","$s5","$s6","$s7","$t8","$t9","$k0","$k1","$gp","$sp","$fp","$ra"};
     for(int i=0;i<tempRegister.size();i++){
-        keywords.push_back(tempRegister[i]);
+        long long hashValue=getHashValue(tempRegister[i]);
+        //cout<<hashValue<<endl;
+        registers[hashValue].regName=tempRegister[i];
+        registers[hashValue].value=0;
     }
 }
-vector<string> getRegisters(){
-    return registers;
-}
+
 void defineNumberOfInstruction(int lineOfCode){
     numberOfInstruction=lineOfCode;
 }

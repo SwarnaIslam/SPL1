@@ -2,7 +2,32 @@
 #define OPERATOR_H
 #include"format.h"
 #include"definition.h"
-void add(){
+enum SysCode{
+    printInt=1,
+    scanInt=5,
+    hexOfInt=34
+};
+void add(vector<string>command,string instructionLine){
+    if(command.size()!=4){
+        reportAndExit("Invalid operation in text section",instructionLine);
+    }
+    long long hashOfRd=getHashValue(command[1]);
+    if(registers[hashOfRd].regName==""||registers[hashOfRd].regName=="$zero"||registers[hashOfRd].regName=="$at"){
+        reportAndExit("Destination register must be from the valid registers(Note:$zero is not modifiable and $at is reserved for assembler)");
+    }
+
+    long long hashOfRs=getHashValue(command[2]);
+    long long hashOfRt=getHashValue(command[3]);
+    if(registers[hashOfRs].regName==""||registers[hashOfRs].regName=="$at"){
+        reportAndExit("Source register must be from the valid registers(Note:$at is reserved for assembler)");
+    }
+    if(registers[hashOfRt].regName==""||registers[hashOfRt].regName=="$at"){
+        reportAndExit("Source register must be from the valid registers(Note:$at is reserved for assembler)");
+    }
+    int32_t valRs=registers[hashOfRs].value;
+    int32_t valRt=registers[hashOfRt].value;
+    checkValidInteger(to_string((long long)valRs+(long long)valRt));
+    //cout<<to_string((long long)valRs+(long long)valRt)<<endl;
 
 }
 void addu(){
@@ -36,13 +61,13 @@ void syscall(vector<string>command,string instructionLine){
     int32_t val=registers[hashValue].value;
     switch (val)
     {
-    case 1:
+    case printInt:
         hashValue=getHashValue("$a0");
         val=registers[hashValue].value;
         cout<<"Printing integer: ";
         cout<<val<<"\n\n";
         break;
-    case 5:
+    case scanInt:
         cout<<"Enter a integer: ";
         cin>>input;
         checkValidInteger(input);
@@ -50,7 +75,7 @@ void syscall(vector<string>command,string instructionLine){
         registers[hashValue].value=stoi(input);
         cout<<"Stored input into $v0 register.\n\n";
         break;
-    case 34:
+    case hexOfInt:
         hashValue=getHashValue("$a0");
         val=registers[hashValue].value;
         cout<<"Printing integer in hexadecimal form: ";
@@ -82,6 +107,9 @@ void perform(long long hashOfOp,vector<string>command,string instructionLine){
     else if(hashOfOp==getHashValue("syscall")){
         syscall(command,instructionLine);
     }
+    else if(hashOfOp==getHashValue("add")){
+        add(command,instructionLine);
+    }
 }
 void executeInstruction(vector<string>trimmedInstruction[]){
     int textStart=getTextIndex();
@@ -105,6 +133,7 @@ void executeInstruction(vector<string>trimmedInstruction[]){
         if(tempOperator==""){
             continue;
         }
+        //cout<<tempOperator<<endl;
         vector<string>operators{"li","la","add","addi","mul","div","j","jal","bne","beq","move","syscall"};
         bool operatorFound=false;
         int instructionNum=0;

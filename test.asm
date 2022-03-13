@@ -1,13 +1,10 @@
 .data
-test1: .word  21
+label: .word 9
+#text: .asciiz "text"
 .text
-test2:  
-li $v0 1
-li $a0 20
-syscall
+li $s0 -2147483647
+li $v0 -2
 
-li $v0 5
-syscall
 
-li $v0 34
-syscall
+add $t0 $s0 $v0
+

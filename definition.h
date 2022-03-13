@@ -9,8 +9,8 @@ vector<string>keywords;
 map<string,int>dataLabel;
 map<string,int>textLabel;
 struct Reg{
-    string regName;
-    int32_t value;
+    string regName="";
+    int32_t value=0;
 };
 Reg registers[200000];
 long long getHashValue(string operation){

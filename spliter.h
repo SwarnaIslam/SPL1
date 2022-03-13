@@ -57,6 +57,7 @@ vector<string>split(char unTrimmedInstruction[],int s,int instructionLine){
 void trim(vector<string>instruction,vector<string>trimmedInstruction[],int instructionNumber){
     int insNumber=0;
 	for(int i=0;i<instructionNumber;i++){
+        //cout<<instruction[i]<<endl;
 		int InsLength=instruction[i].length()+1;
 		char tempIns[InsLength];
 		for(int j=0;j<InsLength;j++){

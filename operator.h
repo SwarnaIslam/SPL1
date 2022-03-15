@@ -13,28 +13,46 @@ void add(vector<string>command,string instructionLine){
     }
     long long hashOfRd=getHashValue(command[1]);
     if(registers[hashOfRd].regName==""||registers[hashOfRd].regName=="$zero"||registers[hashOfRd].regName=="$at"){
-        reportAndExit("Destination register must be from the valid registers(Note:$zero is not modifiable and $at is reserved for assembler)");
+        reportAndExit("Destination register must be from the valid registers(Note:$zero is not modifiable and $at is reserved for assembler)",instructionLine);
     }
 
     long long hashOfRs=getHashValue(command[2]);
     long long hashOfRt=getHashValue(command[3]);
     if(registers[hashOfRs].regName==""||registers[hashOfRs].regName=="$at"){
-        reportAndExit("Source register must be from the valid registers(Note:$at is reserved for assembler)");
+        reportAndExit("Source register must be from the valid registers(Note:$at is reserved for assembler)",instructionLine);
     }
     if(registers[hashOfRt].regName==""||registers[hashOfRt].regName=="$at"){
-        reportAndExit("Source register must be from the valid registers(Note:$at is reserved for assembler)");
+        reportAndExit("Source register must be from the valid registers(Note:$at is reserved for assembler)",instructionLine);
     }
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
     checkValidInteger(to_string((long long)valRs+(long long)valRt));
     //cout<<to_string((long long)valRs+(long long)valRt)<<endl;
-
+    registers[hashOfRd].value=valRs+valRt;
 }
 void addu(){
 
 }
-void addi(){
+void addi(vector<string>command,string instructionLine){
+    if(command.size()!=4){
+        reportAndExit("Invalid operation in text section",instructionLine);
+    }
+    long long hashOfRd=getHashValue(command[1]);
+    if(registers[hashOfRd].regName==""||registers[hashOfRd].regName=="$zero"||registers[hashOfRd].regName=="$at"){
+        reportAndExit("Destination register must be from the valid registers(Note:$zero is not modifiable and $at is reserved for assembler)",instructionLine);
+    }
 
+    long long hashOfRs=getHashValue(command[2]);
+    string tempNumber=command[3];
+    checkValidInteger(tempNumber);
+    if(registers[hashOfRs].regName==""||registers[hashOfRs].regName=="$at"){
+        reportAndExit("Source register must be from the valid registers(Note:$at is reserved for assembler)",instructionLine);
+    }
+    int32_t valRs=registers[hashOfRs].value;
+    int32_t valImm=stol(tempNumber);
+    checkValidInteger(to_string((long long)valRs+(long long)valImm));
+    //cout<<to_string((long long)valRs+(long long)valImm)<<endl;
+    registers[hashOfRd].value=valRs+valImm;
 }
 void li(vector<string>command,string instructionLine){
     if(command.size()!=3){
@@ -87,6 +105,8 @@ void syscall(vector<string>command,string instructionLine){
     }
 }
 void move(vector<string>command,string instructionLine){
+    long long hashOfRd=getHashValue(command[1]);
+    long long hashOfRs=getHashValue(command[2]);
     if(command.size()!=3){
         reportAndExit("Invalid operation in text section",instructionLine);
     }
@@ -95,6 +115,7 @@ void move(vector<string>command,string instructionLine){
     cout<<endl;
     cout<<"Details of this operation:"<<endl;
     cout<<"add"<<" "<<command[1]<<" "<<"$zero"<<" "<<command[2]<<endl;
+    registers[hashOfRd].value=registers[hashOfRs].value;
 }
 void perform(long long hashOfOp,vector<string>command,string instructionLine){
     if(hashOfOp==getHashValue("move")){
@@ -109,6 +130,9 @@ void perform(long long hashOfOp,vector<string>command,string instructionLine){
     }
     else if(hashOfOp==getHashValue("add")){
         add(command,instructionLine);
+    }
+    else if(hashOfOp==getHashValue("addi")){
+        addi(command,instructionLine);
     }
 }
 void executeInstruction(vector<string>trimmedInstruction[]){

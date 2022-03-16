@@ -38,10 +38,13 @@ vector<string>split(char unTrimmedInstruction[],int s,int instructionLine){
             string temp="";
             newLine=0;
             for(int j=i;j<size;j++){
-                if(unTrimmedInstruction[j]!=' '&&unTrimmedInstruction[j]!='\0'&&unTrimmedInstruction[j]!='\n'&&unTrimmedInstruction[j]!='\t'){
+                if(unTrimmedInstruction[j]!=' '&&unTrimmedInstruction[j]!='\0'&&unTrimmedInstruction[j]!='\n'&&unTrimmedInstruction[j]!='\t'&&unTrimmedInstruction[j]!='\r'){
                     temp.push_back(unTrimmedInstruction[j]);
+                    //cout<<unTrimmedInstruction[j]<<endl;
                 }
-                if(unTrimmedInstruction[j]==' '||unTrimmedInstruction[j]=='\t'||j==size-1){
+                else{
+                    //string t=temp;
+                    //cout<<temp<<" "<<t.size()<<endl;
                     trimmedInstruction.push_back(temp);
                     i=j;
                     break;

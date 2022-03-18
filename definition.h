@@ -74,10 +74,10 @@ int defineDataIndex(vector<string>trimmedInstruction[]){
     for(i=0;i<numberOfInstruction;i++){
         //cout<<trimmedInstruction[i][0]<<endl;
         if(trimmedInstruction[i][0]!=""){
-            if(dataFlag==1&&trimmedInstruction[i][0]==isData){
+            if(dataFlag==1&&trimmedInstruction[i][0].c_str()==isData){
                 reportAndExit("More than one .data have been found!");
             }
-            if(trimmedInstruction[i][0]==isData){
+            if(trimmedInstruction[i][0].c_str()==isData){
                 dataFlag=1;
                 dataLine=i;
             }
@@ -93,10 +93,10 @@ int defineTextIndex(vector<string>trimmedInstruction[]){
     int textLine=-1;
     string isText=".text";
     for(i=0;i<numberOfInstruction;i++){
-        if(textFlag==1&&trimmedInstruction[i][0]==isText){
+        if(textFlag==1&&trimmedInstruction[i][0].c_str()==isText){
             reportAndExit("More than one .text have been found!");
         }
-        if(trimmedInstruction[i][0]==isText){
+        if(trimmedInstruction[i][0].c_str()==isText){
             textFlag=1;
             textLine=i;
         }

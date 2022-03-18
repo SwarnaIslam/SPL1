@@ -30,8 +30,28 @@ void add(vector<string>command,string instructionLine){
     //cout<<to_string((long long)valRs+(long long)valRt)<<endl;
     registers[hashOfRd].value=valRs+valRt;
 }
-void addu(){
+void mul(vector<string>command,string instructionLine){
+    if(command.size()!=4){
+        reportAndExit("Invalid operation in text section",instructionLine);
+    }
+    long long hashOfRd=getHashValue(command[1]);
+    if(registers[hashOfRd].regName==""||registers[hashOfRd].regName=="$zero"||registers[hashOfRd].regName=="$at"){
+        reportAndExit("Destination register must be from the valid registers(Note:$zero is not modifiable and $at is reserved for assembler)",instructionLine);
+    }
 
+    long long hashOfRs=getHashValue(command[2]);
+    long long hashOfRt=getHashValue(command[3]);
+    if(registers[hashOfRs].regName==""||registers[hashOfRs].regName=="$at"){
+        reportAndExit("Source register must be from the valid registers(Note:$at is reserved for assembler)",instructionLine);
+    }
+    if(registers[hashOfRt].regName==""||registers[hashOfRt].regName=="$at"){
+        reportAndExit("Source register must be from the valid registers(Note:$at is reserved for assembler)",instructionLine);
+    }
+    int32_t valRs=registers[hashOfRs].value;
+    int32_t valRt=registers[hashOfRt].value;
+    int32_t valRd=valRs*valRt;
+    registers[hashOfRd].value=valRd;
+    cout<<"Multiplication: "<<valRd<<endl;
 }
 void addi(vector<string>command,string instructionLine){
     if(command.size()!=4){
@@ -133,6 +153,9 @@ void perform(long long hashOfOp,vector<string>command,string instructionLine){
     }
     else if(hashOfOp==getHashValue("addi")){
         addi(command,instructionLine);
+    }
+    else if(hashOfOp==getHashValue("mul")){
+        mul(command,instructionLine);
     }
 }
 void executeInstruction(vector<string>trimmedInstruction[]){

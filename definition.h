@@ -13,6 +13,7 @@ struct Reg{
     int32_t value=0;
 };
 Reg registers[200000];
+Reg $LO, $HI;
 long long getHashValue(string operation){
     int p = 37;
     long long mod = 100103;

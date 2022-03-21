@@ -48,7 +48,7 @@ void findDataLabel(vector<string>trimmedInstruction[],int dataStart, int textSta
             }
         }
         if(labelFlag==false){
-            reportAndExit("Unknown operation",instructionLine);
+            reportAndExit("Unknown operation in .data section",instructionLine);
         }
         string tempLabel="";
         string afterLabel=trimmedInstruction[i][j].substr(labelFound+1);
@@ -59,10 +59,10 @@ void findDataLabel(vector<string>trimmedInstruction[],int dataStart, int textSta
             tempLabel=trimmedInstruction[i][0];
         }
         else{
-            reportAndExit("Wrong format of label",instructionLine);
+            reportAndExit("Wrong format of label, seperate words must be connected with a underscore",instructionLine);
         }
         if(j==1&&labelFound!=0){
-            reportAndExit("Wrong format of label",instructionLine);
+            reportAndExit("Wrong format of label, seperate words must be connected with a underscore",instructionLine);
         }
         else if(hasOccurred[tempLabel]>0){
             reportAndExit("Label "+tempLabel+" was defined before",to_string(hasOccurred[tempLabel]));

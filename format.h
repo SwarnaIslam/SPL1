@@ -22,8 +22,16 @@ void checkValidInteger(string tempNumber){
 		reportAndExit("Number out of range. Negative number should be greater than or equal to -2147483648");
 	}
 }
-bool isValidOperator(string tempOp){
-    
+void checkValidDestination(long long hashOfRd,string instructionLine){
+    if(registers[hashOfRd].regName==""||registers[hashOfRd].regName=="$zero"||registers[hashOfRd].regName=="$at"){
+        reportAndExit("Destination register must be from the valid registers(Note:$zero is not modifiable and $at is reserved for assembler)",instructionLine);
+    }
+}
+
+void checkValidSource(long long hashOfSrc,string instructionLine){
+    if(registers[hashOfSrc].regName==""||registers[hashOfSrc].regName=="$at"){
+        reportAndExit("Source register must be from the valid registers(Note:$at is reserved for assembler)",instructionLine);
+    }
 }
 bool isValidKeyword(string token){
     vector<string>tempOperations=getKeywords();

@@ -79,7 +79,7 @@ void mul(vector<string>command,string instructionLine){
 }
 
 void mult(vector<string>command,string instructionLine){
-    cout<<"Entered mult:"<<endl;
+    //cout<<"Entered mult:"<<endl;
     if(command.size()!=3){
         reportAndExit("Invalid operation in text section",instructionLine);
     }
@@ -94,14 +94,38 @@ void mult(vector<string>command,string instructionLine){
 
     int64_t result=(int64_t)valRs*(int64_t)valRt;
 
-    $LO.regName="$LO";
-    $LO.value=result;
+    LO.regName="$LO";
+    LO.value=result;
 
-    $HI.regName="$HI";
-    $HI.value=(result>>32);
+    HI.regName="$HI";
+    HI.value=(result>>32);
 
-    cout<<$LO.value<<" "<<$HI.value<<endl;
+    //cout<<LO.value<<" "<<HI.value<<endl;
 }
+void div(vector<string>command,string instructionLine){
+    //cout<<"Entered mult:"<<endl;
+    if(command.size()!=3){
+        reportAndExit("Invalid operation in text section",instructionLine);
+    }
+    long long hashOfRs=getHashValue(command[1]);
+    long long hashOfRt=getHashValue(command[2]);
+
+    checkValidSource(hashOfRs,instructionLine);
+    checkValidSource(hashOfRt,instructionLine);
+
+    int32_t valRs=registers[hashOfRs].value;
+    int32_t valRt=registers[hashOfRt].value;
+
+
+    LO.regName="$LO";
+    LO.value=valRs/valRt;
+
+    HI.regName="$HI";
+    HI.value=valRs%valRt;
+
+    //cout<<LO.value<<" "<<HI.value<<endl;
+}
+
 void mflo(vector<string>command,string instructionLine){
     if(command.size()!=2){
         reportAndExit("Invalid operation in text section",instructionLine);
@@ -110,7 +134,7 @@ void mflo(vector<string>command,string instructionLine){
 
     checkValidDestination(hashOfRd,instructionLine);
 
-    int32_t valLo=$LO.value;
+    int32_t valLo=LO.value;
     registers[hashOfRd].value=valLo;
 }
 void mfhi(vector<string>command,string instructionLine){
@@ -121,7 +145,7 @@ void mfhi(vector<string>command,string instructionLine){
 
     checkValidDestination(hashOfRd,instructionLine);
 
-    int32_t valHI=$HI.value;
+    int32_t valHI=HI.value;
     registers[hashOfRd].value=valHI;
 }
 #endif

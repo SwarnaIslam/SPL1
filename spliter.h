@@ -34,14 +34,14 @@ vector<string>split(char unTrimmedInstruction[],int s,int instructionLine){
     commaRemove(unTrimmedInstruction);
     int newLine=1;
     for(int i=0;i<size;i++){
-        if(unTrimmedInstruction[i]!=' '&&unTrimmedInstruction[i]!='\0'&&unTrimmedInstruction[i]!='\n'&&unTrimmedInstruction[i]!='\t'){
+        if(unTrimmedInstruction[i]!=' '&&unTrimmedInstruction[i]!='\0'&&unTrimmedInstruction[i]!='\n'&&unTrimmedInstruction[i]!='\t'&&unTrimmedInstruction[i]!='\r'){
             string temp="";
             newLine=0;
             for(int j=i;j<size;j++){
-                if(unTrimmedInstruction[j]!=' '&&unTrimmedInstruction[j]!='\0'&&unTrimmedInstruction[j]!='\n'&&unTrimmedInstruction[j]!='\t'){
+                if(unTrimmedInstruction[j]!=' '&&unTrimmedInstruction[j]!='\0'&&unTrimmedInstruction[j]!='\n'&&unTrimmedInstruction[j]!='\t'&&unTrimmedInstruction[j]!='\r'){
                     temp.push_back(unTrimmedInstruction[j]);
                 }
-                if(unTrimmedInstruction[j]==' '||unTrimmedInstruction[j]=='\t'||j==size-1){
+                else{
                     trimmedInstruction.push_back(temp);
                     i=j;
                     break;

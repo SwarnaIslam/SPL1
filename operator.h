@@ -40,6 +40,9 @@ void perform(long long hashOfOp,vector<string>command,string instructionLine){
     else if(hashOfOp==getHashValue("mult")){
         mult(command,instructionLine);
     }
+    else if(hashOfOp==getHashValue("div")){
+        div(command,instructionLine);
+    }
     else if(hashOfOp==getHashValue("mflo")){
         mflo(command,instructionLine);
     }

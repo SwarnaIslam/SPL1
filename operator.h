@@ -55,6 +55,18 @@ void perform(long long hashOfOp,vector<string>command,string instructionLine){
     else if(hashOfOp==getHashValue("sllv")){
         sllv(command,instructionLine);
     }
+    else if(hashOfOp==getHashValue("srl")){
+        srl(command,instructionLine);
+    }
+    else if(hashOfOp==getHashValue("srlv")){
+        srlv(command,instructionLine);
+    }
+    else if(hashOfOp==getHashValue("sra")){
+        sra(command,instructionLine);
+    }
+    else if(hashOfOp==getHashValue("srav")){
+        srav(command,instructionLine);
+    }
 }
 void executeInstruction(vector<string>trimmedInstruction[]){
     int textStart=getTextIndex();
@@ -79,7 +91,7 @@ void executeInstruction(vector<string>trimmedInstruction[]){
             continue;
         }
         //cout<<tempOperator<<endl;
-        vector<string>operators{"li","la","add","addi","mul","mult","mflo","mfhi","div","sll","sllv","j","jal","bne","beq","move","syscall"};
+        vector<string>operators{"li","la","add","addi","mul","mult","mflo","mfhi","div","sll","sllv","srl","srlv","sra","srav","j","jal","bne","beq","move","syscall"};
         bool operatorFound=false;
         int instructionNum=0;
         long long hashOfTempOp=getHashValue(tempOperator);

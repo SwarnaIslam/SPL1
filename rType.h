@@ -202,7 +202,7 @@ void srl(vector<string>command,string instructionLine){
     if(shift_amount>31||shift_amount<0){
         reportAndExit("Shift amount must be between 0 to 31");
     }     
-    int32_t valOfRs=registers[hashOfRs].value;    
+    unsigned int valOfRs=registers[hashOfRs].value;    
     registers[hashOfRd].value=(valOfRs>>shift_amount);
     registers[hashOfRd].regName=command[1];
     //cout<<"Sll result: "<<registers[hashOfRd].value<<" "<<valOfRs<<endl;                                                                                                                                                                                                                                                                                                                         
@@ -221,9 +221,49 @@ void srlv(vector<string>command,string instructionLine){
     if(shift_amount>31||shift_amount<0){
         reportAndExit("Shift amount must be between 0 to 31");
     }     
+    unsigned  int valOfRs=registers[hashOfRs].value;    
+    registers[hashOfRd].value=(valOfRs>>shift_amount);
+    registers[hashOfRd].regName=command[1];
+    //cout<<"Sll result: "<<registers[hashOfRd].value<<" "<<valOfRs<<endl;                                                                                                                                                                                                                                                                                                                         
+}
+void sra(vector<string>command,string instructionLine){
+    if(command.size()!=4){
+        reportAndExit("Invalid operation in text section",instructionLine);
+    }
+    long long hashOfRd=getHashValue(command[1]);
+    long long hashOfRs=getHashValue(command[2]);
+
+    checkValidDestination(hashOfRd,instructionLine);
+    checkValidSource(hashOfRs,instructionLine);
+
+    checkValidInteger(command[3]);
+    int shift_amount=stoi(command[3]);
+    if(shift_amount>31||shift_amount<0){
+        reportAndExit("Shift amount must be between 0 to 31");
+    }     
     int32_t valOfRs=registers[hashOfRs].value;    
     registers[hashOfRd].value=(valOfRs>>shift_amount);
     registers[hashOfRd].regName=command[1];
     //cout<<"Sll result: "<<registers[hashOfRd].value<<" "<<valOfRs<<endl;                                                                                                                                                                                                                                                                                                                         
 }
+void srav(vector<string>command,string instructionLine){
+    if(command.size()!=4){
+        reportAndExit("Invalid operation in text section",instructionLine);
+    }
+    long long hashOfRd=getHashValue(command[1]);
+    long long hashOfRs=getHashValue(command[2]);
+    long long hashOfRt=getHashValue(command[3]);
+
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt,instructionLine);
+
+    int shift_amount=registers[hashOfRt].value;
+    if(shift_amount>31||shift_amount<0){
+        reportAndExit("Shift amount must be between 0 to 31");
+    }     
+    int32_t valOfRs=registers[hashOfRs].value;    
+    registers[hashOfRd].value=(valOfRs>>shift_amount);
+    registers[hashOfRd].regName=command[1];
+    //cout<<"Sll result: "<<registers[hashOfRd].value<<" "<<valOfRs<<endl;                                                                                                                                                                                                                                                                                                                         
+}
+
 #endif

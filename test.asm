@@ -1,30 +1,12 @@
 .data
-label: .word 9
-#text: .asciiz "text"
+
 .text
-li $s0 214748364
-li $s1 4
-mult $s0 $s1
-mflo $s2
 
+li $s0 7
+sll $t0 $s0 31
+li $s1 29
+
+sllv $t0 $s0 $s1
 li $v0 1
-move $a0 $s2
-syscall
-
-mfhi $s3
-
-li $v0 1
-move $a0 $s3
-syscall
-div $s0 $s1
-mflo $s2
-
-li $v0 1
-move $a0 $s2
-syscall
-
-mfhi $s3
-
-li $v0 1
-move $a0 $s3
+move $a0 $t0
 syscall

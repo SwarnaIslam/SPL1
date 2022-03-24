@@ -42,6 +42,7 @@ void li(vector<string>command,string instructionLine){
     long long hashOfRd=getHashValue(command[1]);
     checkValidDestination(hashOfRd,instructionLine);
     registers[hashOfRd].value=number;
+    //cout<<command[1]<<" li: "<<registers[hashOfRd].value<<endl;
 }
 
 #endif

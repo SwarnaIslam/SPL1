@@ -2,9 +2,12 @@
 
 .text
 
-li $s0 -7
-srl $t0 $s0 2
+li $s0 -10929
+addi $t0 $s0 -248487
+
+and $t1 $t0 $s0
 
 li $v0 1
-move $a0 $t0
+move $a0 $t1
 syscall
+

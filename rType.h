@@ -267,6 +267,7 @@ void srav(vector<string>command,string instructionLine){
     //cout<<"Sll result: "<<registers[hashOfRd].value<<" "<<valOfRs<<endl;                                                                                                                                                                                                                                                                                                                         
 }
 void And(vector<string>command,string instructionLine){
+    //cout<<"and: "<<endl;
     if(command.size()!=4){
         reportAndExit("Invalid operation in text section",instructionLine);
     }
@@ -282,6 +283,7 @@ void And(vector<string>command,string instructionLine){
 }
 
 void Or(vector<string>command,string instructionLine){
+    //cout<<"or: "<<endl;
     if(command.size()!=4){
         reportAndExit("Invalid operation in text section",instructionLine);
     }
@@ -296,6 +298,7 @@ void Or(vector<string>command,string instructionLine){
     registers[hashOfRd].value=valRd;
 }
 void Xor(vector<string>command,string instructionLine){
+    //cout<<"xor: "<<endl;
     if(command.size()!=4){
         reportAndExit("Invalid operation in text section",instructionLine);
     }
@@ -306,10 +309,11 @@ void Xor(vector<string>command,string instructionLine){
     checkValidReg(hashOfRd,hashOfRs,hashOfRt,instructionLine);
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
-    int32_t valRd=valRs^valRt;
+    int32_t valRd=userDefinedXor(valRs,valRt);
     registers[hashOfRd].value=valRd;
 }
 void Nor(vector<string>command,string instructionLine){
+    //cout<<"nor: "<<endl;
     if(command.size()!=4){
         reportAndExit("Invalid operation in text section",instructionLine);
     }
@@ -325,6 +329,7 @@ void Nor(vector<string>command,string instructionLine){
     registers[hashOfRd].value=valRd;
 }
 void Not(vector<string>command,string instructionLine){
+    //cout<<"not: "<<endl;
     if(command.size()!=3){
         reportAndExit("Invalid operation in text section",instructionLine);
     }

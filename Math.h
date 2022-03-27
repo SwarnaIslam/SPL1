@@ -55,6 +55,7 @@ string getBinaryValue(int32_t value){
             value/=2;
         }
         while(binVal.size()<32)binVal='0'+binVal;
+        //cout<<"positive bin: "<<binVal<<endl;
         binVal=twos_complement(binVal);
     }
     //cout<<value<<" = "<<binVal<<endl;
@@ -93,8 +94,9 @@ int32_t userDefinedNot(int32_t val){
     for(int i=0;i<32;i++){
         binVal[i]=(binVal[i]=='1')?'0':'1';
     }
-    int32_t number=getNumber(binResult);
-    //cout<<binResult<<"="<<binVal1<<"&"<<binVal2<<endl;
+    int32_t number=getNumber(binVal);
+    //cout<<"notBin: "<<binVal<<endl;
+    //cout<<"NotVal: "<<number<<endl;
     return number;
 }
 int32_t userDefinedNor(int32_t val1, int32_t val2){
@@ -110,5 +112,12 @@ int32_t userDefinedNor(int32_t val1, int32_t val2){
     number=userDefinedNot(number);
     //cout<<binResult<<"="<<binVal1<<"&"<<binVal2<<endl;
     return number;
+}
+int32_t userDefinedXor(int32_t val1, int32_t val2){
+    int32_t aNotb=userDefinedAnd(val1,userDefinedNot(val2));
+    int32_t bNota=userDefinedAnd(val2,userDefinedNot(val1));
+
+    int32_t aXorb=userDefinedOr(aNotb,bNota);
+    return aXorb;
 }
 #endif

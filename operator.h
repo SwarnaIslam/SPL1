@@ -10,11 +10,11 @@ void move(vector<string>command,string instructionLine){
     if(command.size()!=3){
         reportAndExit("Invalid operation in text section",instructionLine);
     }
-    cout<<"Performing pseudo instruction..."<<endl;
-    cout<<command[0]<<" "<<command[1]<<" "<<command[2]<<endl;
-    cout<<endl;
-    cout<<"Details of this operation:"<<endl;
-    cout<<"add"<<" "<<command[1]<<" "<<"$zero"<<" "<<command[2]<<endl;
+    // cout<<"Performing pseudo instruction..."<<endl;
+    // cout<<command[0]<<" "<<command[1]<<" "<<command[2]<<endl;
+    // cout<<endl;
+    // cout<<"Details of this operation:"<<endl;
+    // cout<<"add"<<" "<<command[1]<<" "<<"$zero"<<" "<<command[2]<<endl;
     registers[hashOfRd].value=registers[hashOfRs].value;
 }
 void perform(long long hashOfOp,vector<string>command,string instructionLine){

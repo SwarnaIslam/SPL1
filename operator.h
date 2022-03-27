@@ -10,11 +10,11 @@ void move(vector<string>command,string instructionLine){
     if(command.size()!=3){
         reportAndExit("Invalid operation in text section",instructionLine);
     }
-    // cout<<"Performing pseudo instruction..."<<endl;
-    // cout<<command[0]<<" "<<command[1]<<" "<<command[2]<<endl;
-    // cout<<endl;
-    // cout<<"Details of this operation:"<<endl;
-    // cout<<"add"<<" "<<command[1]<<" "<<"$zero"<<" "<<command[2]<<endl;
+    cout<<"Performing pseudo instruction..."<<endl;
+    cout<<command[0]<<" "<<command[1]<<" "<<command[2]<<endl;
+    cout<<endl;
+    cout<<"Details of this operation:"<<endl;
+    cout<<"add"<<" "<<command[1]<<" "<<"$zero"<<" "<<command[2]<<endl;
     registers[hashOfRd].value=registers[hashOfRs].value;
 }
 void perform(long long hashOfOp,vector<string>command,string instructionLine){
@@ -55,33 +55,6 @@ void perform(long long hashOfOp,vector<string>command,string instructionLine){
     else if(hashOfOp==getHashValue("sllv")){
         sllv(command,instructionLine);
     }
-    else if(hashOfOp==getHashValue("srl")){
-        srl(command,instructionLine);
-    }
-    else if(hashOfOp==getHashValue("srlv")){
-        srlv(command,instructionLine);
-    }
-    else if(hashOfOp==getHashValue("sra")){
-        sra(command,instructionLine);
-    }
-    else if(hashOfOp==getHashValue("srav")){
-        srav(command,instructionLine);
-    }
-    else if(hashOfOp==getHashValue("and")){
-        And(command,instructionLine);
-    }
-    else if(hashOfOp==getHashValue("or")){
-        Or(command,instructionLine);
-    }
-    else if(hashOfOp==getHashValue("not")){
-        Not(command,instructionLine);
-    }
-    else if(hashOfOp==getHashValue("xor")){
-        Xor(command,instructionLine);
-    }
-    else if(hashOfOp==getHashValue("nor")){
-        Nor(command,instructionLine);
-    }
 }
 void executeInstruction(vector<string>trimmedInstruction[]){
     int textStart=getTextIndex();
@@ -106,7 +79,7 @@ void executeInstruction(vector<string>trimmedInstruction[]){
             continue;
         }
         //cout<<tempOperator<<endl;
-        vector<string>operators{"li","la","add","addi","mul","mult","mflo","mfhi","div","sll","sllv","srl","srlv","sra","srav","and","or","not","xor","nor","j","jal","bne","beq","move","syscall"};
+        vector<string>operators{"li","la","add","addi","mul","mult","mflo","mfhi","div","sll","sllv","j","jal","bne","beq","move","syscall"};
         bool operatorFound=false;
         int instructionNum=0;
         long long hashOfTempOp=getHashValue(tempOperator);

@@ -1,7 +1,6 @@
 #ifndef FORMAT_H
 #define FORMAT_H
-
-void checkValidInteger(string tempNumber){
+void isNumber(string tempNumber){
     for(int32_t i=0;i<tempNumber.size();i++) //check that each character is a digit
 	{
 		if(tempNumber[i]=='-'&&i==0) //ignore minus sign
@@ -13,13 +12,28 @@ void checkValidInteger(string tempNumber){
 			reportAndExit("Specified value is not a number");
 		}
 	}
-	if(tempNumber[0]!='-'&&(tempNumber.size()>10||(tempNumber.size()==10 &&tempNumber>"2147483647")))
+}
+void checkValid32BitInteger(string tempNumber){
+    isNumber(tempNumber);
+    cout<<tempNumber.substr(1)<<endl;
+	if(tempNumber[0]!='-'&&tempNumber>"2147483647"&&tempNumber.length()>=10)
 	{
 		reportAndExit("Number out of range. Positive number shouble be less than 2147483648");
 	}
-	else if(tempNumber[0]=='-' && (tempNumber.size()>11||(tempNumber.size()==11 && tempNumber>"-2147483648"))) //same check as above for negative integers
+	else if(tempNumber[0]=='-' && tempNumber.substr(1)>"2147483648"&&tempNumber.substr(1).length()>=10) //same check as above for negative integers
 	{
 		reportAndExit("Number out of range. Negative number should be greater than or equal to -2147483648");
+	}
+}
+void checkValid16BitInteger(string tempNumber){
+    isNumber(tempNumber);
+	if(tempNumber[0]!='-'&&tempNumber>"65535"&&tempNumber.length()>=5)
+	{
+		reportAndExit("Number out of range. Positive number shouble be less than 65536");
+	}
+	else if(tempNumber[0]=='-' && tempNumber.substr(1)>"65536"&&tempNumber.substr(1).length()>=5) //same check as above for negative integers
+	{
+		reportAndExit("Number out of range. Negative number should be greater than or equal to -65536");
 	}
 }
 void checkValidDestination(long long hashOfRd,string instructionLine){

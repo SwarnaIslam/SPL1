@@ -100,16 +100,9 @@ int32_t userDefinedNot(int32_t val){
     return number;
 }
 int32_t userDefinedNor(int32_t val1, int32_t val2){
-    string binVal1=getBinaryValue(val1);
-    string binVal2=getBinaryValue(val2);
-    string binResult="";
+    int32_t aOrb=userDefinedOr(val1,val2);
 
-    for(int i=0;i<32;i++){
-        if(binVal1[i]=='1'||binVal2[i]=='1')binResult=binResult+'1';
-        else binResult=binResult+'0';
-    }
-    int32_t number=getNumber(binResult);
-    number=userDefinedNot(number);
+    int32_t number=userDefinedNot(number);
     //cout<<binResult<<"="<<binVal1<<"&"<<binVal2<<endl;
     return number;
 }

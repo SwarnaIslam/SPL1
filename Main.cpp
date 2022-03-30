@@ -5,7 +5,7 @@
 #include<map>
 #include"headers.h"
 using namespace std;
-string pathName;
+string pathName; 
 int main()
 {
 	string str="......ASSEMULATION......";

@@ -88,7 +88,7 @@ void findDataLabel(vector<string>trimmedInstruction[],int dataStart, int textSta
             reportAndExit("Expected .word after ':'",instructionLine);
         }
         //cout<<tempNumber<<endl;
-        checkValidInteger(tempNumber);
+        checkValid32BitInteger(tempNumber);
     }
 }
 void findTextLabel(vector<string>trimmedInstruction[],int dataStart, int textStart){

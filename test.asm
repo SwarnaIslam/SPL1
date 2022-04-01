@@ -1,7 +1,9 @@
 .data
 	#nl: .asciiz"\n"
+	label: .word 1
+	label1: .word 2
 .text
-
+label2:
 li $s0 -10929
 addi $t0 $s0 -248487
 

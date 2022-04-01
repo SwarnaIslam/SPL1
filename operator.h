@@ -4,6 +4,7 @@
 #include"definition.h"
 #include"rType.h"
 #include"iType.h"
+#include"Algorithm.h"
 void move(vector<string>command,string instructionLine){
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
@@ -91,7 +92,7 @@ void executeInstruction(vector<string>trimmedInstruction[]){
     int dataStart=getDataIndex();
     int textEnd=0;
     string instructionLine="";
-    map<string,int>labels=getTextLabel();
+    BST<string,int>*labels=getTextLabel();
     if(dataStart<textStart){
         textEnd=getNumberOfInstruction();
     }
@@ -126,7 +127,7 @@ void executeInstruction(vector<string>trimmedInstruction[]){
         if(labelFound>0&&labelFound<tempOperator.size()){
             tempOperator=tempOperator.substr(0,labelFound);
         }
-        if(operatorFound==false&&labels[tempOperator]==0){
+        if(operatorFound==false&&labels->searchBST(labels,tempOperator)==0){
             reportAndExit("Invalid operation in text section",instructionLine);
         }
         else{

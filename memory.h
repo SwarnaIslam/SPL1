@@ -2,6 +2,7 @@
 #define MEMORY_H
 #include"debugger.h"
 #include"format.h"
+#include"Algorithm.h"
 string getNumber(vector<string>dataLabel,int labelIndex,string instructionLine){
     int i=0;
     int size=dataLabel.size();
@@ -19,7 +20,7 @@ void findDataLabel(vector<string>trimmedInstruction[],int dataStart, int textSta
     int instructionNumber=getNumberOfInstruction();
     int dataEnd=0;
     string instructionLine="";
-    map<string,int>hasOccurred;
+    BST<string,int>*hasOccurred=NULL;
     if(dataStart>textStart){
         dataEnd=instructionNumber;
     }
@@ -64,8 +65,8 @@ void findDataLabel(vector<string>trimmedInstruction[],int dataStart, int textSta
         if(j==1&&labelFound!=0){
             reportAndExit("Wrong format of label, seperate words must be connected with a underscore",instructionLine);
         }
-        else if(hasOccurred[tempLabel]>0){
-            reportAndExit("Label "+tempLabel+" was defined before",to_string(hasOccurred[tempLabel]));
+        else if(hasOccurred->searchBST(hasOccurred,tempLabel)>0){
+            reportAndExit("Label "+tempLabel+" was defined before",to_string(hasOccurred->searchBST(hasOccurred,tempLabel)));
         }
         else if(afterLabel!=".word"&&afterLabel!=""){
             reportAndExit("Invalid token after ':'",instructionLine);
@@ -74,7 +75,7 @@ void findDataLabel(vector<string>trimmedInstruction[],int dataStart, int textSta
             reportAndExit("Wrong format of label",instructionLine);
         }
         else{
-            hasOccurred[tempLabel]=i+1;
+            hasOccurred=hasOccurred->insertBST(tempLabel,i+1,hasOccurred);
             setDataLabel(tempLabel,i+1);
         }
         string tempNumber="";
@@ -87,7 +88,6 @@ void findDataLabel(vector<string>trimmedInstruction[],int dataStart, int textSta
         else{
             reportAndExit("Expected .word after ':'",instructionLine);
         }
-        //cout<<tempNumber<<endl;
         checkValid32BitInteger(tempNumber);
     }
 }
@@ -95,7 +95,7 @@ void findTextLabel(vector<string>trimmedInstruction[],int dataStart, int textSta
     int instructionNumber=getNumberOfInstruction();
     int textEnd=0;
     string instructionLine="";
-    map<string,int>hasOccurred=getDataLabel();
+    BST<string,int>*hasOccurred=getDataLabel();
     //cout<<dataStart<<" "<<endl;
     if(dataStart<textStart){
         textEnd=instructionNumber;
@@ -147,8 +147,8 @@ void findTextLabel(vector<string>trimmedInstruction[],int dataStart, int textSta
         if(j==1&&labelFound!=0){
             reportAndExit("Wrong format of label",instructionLine);
         }
-        else if(hasOccurred[tempLabel]>0){
-            reportAndExit("Label '"+tempLabel+"' was defined before",to_string(hasOccurred[tempLabel]));
+        else if(hasOccurred->searchBST(hasOccurred,tempLabel)>0){
+            reportAndExit("Label '"+tempLabel+"' was defined before",to_string(hasOccurred->searchBST(hasOccurred,tempLabel)));
         }
         else if(afterLabel!=""){
             reportAndExit("No instruction is expected after label name",instructionLine);
@@ -157,7 +157,7 @@ void findTextLabel(vector<string>trimmedInstruction[],int dataStart, int textSta
             reportAndExit("Wrong format of label",instructionLine);
         }
         else{
-            hasOccurred[tempLabel]=i+1;
+            hasOccurred->insertBST(tempLabel,i+1,hasOccurred);
             setTextLabel(tempLabel,i+1);
         }  
     }

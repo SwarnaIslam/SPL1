@@ -2,48 +2,35 @@
 #define DEFINITION_H
 #include<vector>
 #include"debugger.h"
+#include"Algorithm.h"
 using namespace std;
 int numberOfInstruction;
 int dataIndex,textIndex;
 vector<string>keywords;
-map<string,int>dataLabel;
-map<string,int>textLabel;
+BST<string, int> *dataLabelRoot=NULL;
+BST<string, int> *textLabelRoot=NULL;
 struct Reg{
     string regName="";
     int32_t value=0;
 };
 Reg registers[200000];
 Reg LO, HI;
-long long getHashValue(string operation){
-    int p = 37;
-    long long mod = 100103;
-    long long power_of_p = 1;
-    long long hashValue = 0;
-    //cout<<operation<<endl;
-    //if(operation=="$zero")return 0;
-    for (int i = 0;operation[i]!='\0'; i++) {
-        hashValue= (hashValue+ (operation[i] - '$' + 1) * power_of_p)% mod;
-        //cout<<hashValue<<" "<<power_of_p<<" "<<operation[i]-'$'<<" "<<operation[i]<<endl;
-        power_of_p= (power_of_p * p) % mod;
-    }
-    return (hashValue%mod + mod) % mod;
+void setDataLabel(string labelNme,int line){
+    dataLabelRoot=dataLabelRoot->insertBST(labelNme,line,dataLabelRoot);
 }
-void setDataLabel(string labelName,int line){
-    dataLabel[labelName]=line;
+void setTextLabel(string labelNme,int line){
+    textLabelRoot=textLabelRoot->insertBST(labelNme,line,textLabelRoot);
 }
-void setTextLabel(string labelName,int line){
-    textLabel[labelName]=line;
+
+struct BST<string,int> *getDataLabel(){
+    return dataLabelRoot;
 }
-map<string,int>getDataLabel(){
-    return dataLabel;
-}
-map<string,int>getTextLabel(){
-    return textLabel;
+struct BST<string,int> *getTextLabel(){
+    return textLabelRoot;
 }
 void defineKeywords(){
     vector<string>tempKeywords{"li","la","add","addi","mul","div","j","jal","bne","beq","move","syscall",".data",".text",".word"};
     for(int i=0;i<tempKeywords.size();i++){
-        //cout<<tempKeywords[i]<<" "<<getHashValue(tempKeywords[i])<<endl;
         keywords.push_back(tempKeywords[i]);
     }
 }

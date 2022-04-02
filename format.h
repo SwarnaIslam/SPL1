@@ -15,7 +15,7 @@ void isNumber(string tempNumber){
 }
 void checkValid32BitInteger(string tempNumber){
     isNumber(tempNumber);
-    cout<<tempNumber.substr(1)<<endl;
+    //cout<<tempNumber.substr(1)<<endl;
 	if(tempNumber[0]!='-'&&tempNumber>"2147483647"&&tempNumber.length()>=10)
 	{
 		reportAndExit("Number out of range. Positive number shouble be less than 2147483648");

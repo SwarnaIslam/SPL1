@@ -62,6 +62,24 @@ void add(vector<string>command,string instructionLine){
     //cout<<to_string((long long)valRs+(long long)valRt)<<endl;
     registers[hashOfRd].value=valRs+valRt;
 }
+void sub(vector<string>command,string instructionLine){
+    //cout<<"nor: "<<endl;
+    if(command.size()!=4){
+        reportAndExit("Invalid operation in text section",instructionLine);
+    }
+    long long hashOfRd=getHashValue(command[1]);
+    long long hashOfRs=getHashValue(command[2]);
+    long long hashOfRt=getHashValue(command[3]);
+
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt,instructionLine);
+
+    int32_t valRs=registers[hashOfRs].value;
+    int32_t valRt=registers[hashOfRt].value;
+    long long valRd=(long long)valRs-(long long)valRt;
+    
+    checkValid32BitInteger(to_string(valRd));
+    registers[hashOfRd].value=valRd;
+}
 void mul(vector<string>command,string instructionLine){
     if(command.size()!=4){
         reportAndExit("Invalid operation in text section",instructionLine);
@@ -242,8 +260,9 @@ void sra(vector<string>command,string instructionLine){
     if(shift_amount>31||shift_amount<0){
         reportAndExit("Shift amount must be between 0 to 31");
     }     
-    int32_t valOfRs=registers[hashOfRs].value;    
-    registers[hashOfRd].value=(valOfRs>>shift_amount);
+    int32_t valOfRs=registers[hashOfRs].value; 
+    int32_t valOfRd=  (valOfRs>>shift_amount); 
+    registers[hashOfRd].value=valOfRd;
     registers[hashOfRd].regName=command[1];
     //cout<<"Sll result: "<<registers[hashOfRd].value<<" "<<valOfRs<<endl;                                                                                                                                                                                                                                                                                                                         
 }
@@ -297,7 +316,7 @@ void Or(vector<string>command,string instructionLine){
     int32_t valRd=userDefinedOr(valRs,valRt);
     registers[hashOfRd].value=valRd;
 }
-void Xor(vector<string>command,string instructionLine){
+int Xor(vector<string>command,string instructionLine){
     //cout<<"xor: "<<endl;
     if(command.size()!=4){
         reportAndExit("Invalid operation in text section",instructionLine);
@@ -311,6 +330,7 @@ void Xor(vector<string>command,string instructionLine){
     int32_t valRt=registers[hashOfRt].value;
     int32_t valRd=userDefinedXor(valRs,valRt);
     registers[hashOfRd].value=valRd;
+    return valRd;
 }
 void Nor(vector<string>command,string instructionLine){
     //cout<<"nor: "<<endl;
@@ -343,4 +363,30 @@ void Not(vector<string>command,string instructionLine){
     int32_t valRd=userDefinedNot(valRs);
     registers[hashOfRd].value=valRd;
 }
+
+void abs(vector<string>command,string instructionLine){
+    //cout<<"not: "<<endl;
+    if(command.size()!=3){
+        reportAndExit("Invalid operation in text section",instructionLine);
+    }
+    long long hashOfRd=getHashValue(command[1]);
+    long long hashOfRs=getHashValue(command[2]);
+    string pseudoReg=getAvailableTempReg(command[2]);
+
+    checkValidDestination(hashOfRd,instructionLine);
+    checkValidSource(hashOfRs,instructionLine);
+
+    cout<<"Performing pseudo instruction..."<<endl;
+    cout<<command[0]<<" "<<command[1]<<" "<<command[2]<<endl<<endl;
+
+    cout<<"Details of this operation:"<<endl;
+    cout<<"sra "<<pseudoReg<<" "<<command[2]<<" "<<31<<endl;
+    cout<<"xor "<<command[2]<<" "<<command[2]<<" "<<pseudoReg<<endl;
+    cout<<"sub "<<command[1]<<" "<<command[2]<<" "<<pseudoReg<<endl;
+
+    int32_t valRs=registers[hashOfRs].value;
+    int32_t valRd=abs(valRs);
+    registers[hashOfRd].value=valRd;
+}
+
 #endif

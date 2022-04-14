@@ -10,4 +10,7 @@ void reportAndExit(string errorMessage){
     cout<<"Error: "<<errorMessage<<endl;
     exit(1);
 }
+void warning(string errorMessage, string instructionLine=""){
+    cout<<"Warning: "<<errorMessage<<"at line "<<instructionLine<<endl;
+}
 #endif

@@ -3,35 +3,42 @@
 #include"debugger.h"
 #include"format.h"
 #include"Algorithm.h"
-string getNumber(vector<string>dataLabel,int labelIndex,string instructionLine){
-    int i=0;
+#define CAPACITY 100000
+
+int* getNumber(vector<string>dataLabel,int labelIndex, int arraySize){
+    int i=0,j=0;
     int size=dataLabel.size();
     bool tokenFound=false;
+    int *tempArray=(int*)calloc(arraySize,sizeof(int));
     for(i=labelIndex;i<size;i++){
-        if(tokenFound==true){
-            reportAndExit("Found more than one token after .word",instructionLine);
-        }
-        tokenFound=true;
+        checkValid32BitInteger(dataLabel[i]);
+        tempArray[j++]=stoi(dataLabel[i]);
     }
-    return dataLabel[size-1];
+    return tempArray;
 }
-
-void findDataLabel(vector<string>trimmedInstruction[],int dataStart, int textStart){
-    int instructionNumber=getNumberOfInstruction();
-    int dataEnd=0;
-    string instructionLine="";
-    BST<string,int>*hasOccurred=NULL;
-    if(dataStart>textStart){
-        dataEnd=instructionNumber;
+int endIndex(int start1, int start2, int instructionNumber){
+    int end=-1;
+    if(start1>start2){
+        end=instructionNumber;
     }
     else{
-        if(dataStart+1==textStart){
-            return;
+        if(start1+1==start2){
+            return end;
         }
         else{
-            dataEnd=textStart;
+            end=start2;
         }
     }
+    return end;
+}
+void findDataLabel(vector<string>trimmedInstruction[],int dataStart, int textStart){
+    int instructionNumber=getNumberOfInstruction();
+    int dataEnd=endIndex(dataStart, textStart, instructionNumber);;
+    string instructionLine="";
+    BST<string,int>*hasOccurred=NULL;
+    data_hashTable* table=create_dataTable(CAPACITY);
+
+
     for(int i=dataStart+1;i<dataEnd;i++){
         instructionLine=to_string(i+1);
         int labelFound=-1,j;
@@ -68,7 +75,7 @@ void findDataLabel(vector<string>trimmedInstruction[],int dataStart, int textSta
         else if(hasOccurred->searchBST(hasOccurred,tempLabel)>0){
             reportAndExit("Label "+tempLabel+" was defined before",to_string(hasOccurred->searchBST(hasOccurred,tempLabel)));
         }
-        else if(afterLabel!=".word"&&afterLabel!=""){
+        else if((afterLabel!=".word"||afterLabel!=".space")&&afterLabel!=""){
             reportAndExit("Invalid token after ':'",instructionLine);
         }
         else if(!isValidLabel(tempLabel)){
@@ -78,37 +85,46 @@ void findDataLabel(vector<string>trimmedInstruction[],int dataStart, int textSta
             hasOccurred=hasOccurred->insertBST(tempLabel,i+1,hasOccurred);
             setDataLabel(tempLabel,i+1);
         }
-        string tempNumber="";
-        if(afterLabel==".word"){
-            tempNumber=getNumber(trimmedInstruction[i],j+1,instructionLine);
+        if(afterLabel==".word"||afterLabel==".space"){
+            if(afterLabel==".word"){
+                int arraySize=trimmedInstruction[i].size()-j-1;
+                int *tempArray=getNumber(trimmedInstruction[i], j+1, arraySize);
+                cout<<tempArray<<endl;
+                
+            }
+            else{
+                int arraySize=stoi(trimmedInstruction[i][j+1])/4;
+                int* tempArray=(int*)calloc(arraySize, sizeof(int));
+                
+            }
         }
-        else if(trimmedInstruction[i][j+1]==".word"){
-            tempNumber=getNumber(trimmedInstruction[i],j+2,instructionLine);
+        else if(trimmedInstruction[i][j+1]==".word"||trimmedInstruction[i][j+1]==".space"){
+            if(trimmedInstruction[i][j+1]==".word"){
+                int arraySize=trimmedInstruction[i].size()-j-2;
+                
+                int *tempArray=getNumber(trimmedInstruction[i], j+2, arraySize);
+                data_ht_insert(table,tempLabel,arraySize*4,tempArray);
+            }
+            else{
+                int arraySize=stoi(trimmedInstruction[i][j+2])/4;
+
+                int* tempArray=(int*)calloc(arraySize, sizeof(int));
+                data_ht_insert(table,tempLabel,stoi(trimmedInstruction[i][j+2]),tempArray);
+            }
         }
         else{
-            reportAndExit("Expected .word after ':'",instructionLine);
+            reportAndExit("Expected directive after ':'",instructionLine);
         }
-        checkValid32BitInteger(tempNumber);
     }
+    print_data_table(table);
 }
 void findTextLabel(vector<string>trimmedInstruction[],int dataStart, int textStart){
     int instructionNumber=getNumberOfInstruction();
     int textEnd=0;
     string instructionLine="";
     BST<string,int>*hasOccurred=getDataLabel();
-    //cout<<dataStart<<" "<<endl;
-    if(dataStart<textStart){
-        textEnd=instructionNumber;
-        //cout<<instructionNumber<<" "<<getNumberOfInstruction()<<endl;
-    }
-    else{
-        if(dataStart==textStart+1){
-            return;
-        }
-        else{
-            textEnd=dataStart;
-        }
-    }
+    textEnd=endIndex(textStart, dataStart, instructionNumber);
+    
     for(int i=textStart+1;i<textEnd;i++){
         //cout<<"Entered loop"<<endl;
         instructionLine=to_string(i+1);
@@ -167,5 +183,8 @@ void getLabel(vector<string>trimmedInstruction[]){
     int textStart=getTextIndex();
     findDataLabel(trimmedInstruction,dataStart,textStart);
     findTextLabel(trimmedInstruction,dataStart,textStart);
+
+    // data_ht_insert(table,"sample",10,vector<int>(10));
+    // data_ht_insert(table,"sample",10,vector<int>(20));
 }
 #endif

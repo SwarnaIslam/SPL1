@@ -4,9 +4,10 @@
 #include<math.h>
 using namespace std;
 vector<int>data_index;
+vector<int>text_index;
 long long getHashValue(string operation){
     int p = 37;
-    long long mod = 100103;
+    long long mod = 10009;
     long long power_of_p = 1;
     long long hashValue = 0;
     for (int i = 0;operation[i]!='\0'; i++) {
@@ -15,38 +16,56 @@ long long getHashValue(string operation){
     }
     return (hashValue%mod + mod) % mod;
 }
-struct data_ht_item{
+struct dataHashTableItem{
     string key="";
     int size=0;
     int *array;
 };
-
-struct data_linkedList{
-    data_ht_item *dataItem;
-    data_linkedList *next;
+struct textHashTableItem{
+    string key;
+    int line;
+};
+struct dataLinkedList{
+    dataHashTableItem *dataItem;
+    dataLinkedList *next;
 };
 
-struct data_hashTable{
-    data_ht_item **dataItems;
-    data_linkedList **dataOverflowBuckets;
+struct textLinkedList{
+    textHashTableItem *textItem;
+    textLinkedList *next;
+};
+
+struct dataHashTable{
+    dataHashTableItem **dataItems;
+    dataLinkedList **dataOverflowBuckets;
     int dataTableSize;
-    int dataCount;
 };
 
-data_linkedList* allocateDataList(){
-    data_linkedList *list=(data_linkedList*)malloc(sizeof(data_linkedList));
+struct textHashTable{
+    textHashTableItem **textItems;
+    textLinkedList **textOverflowBuckets;
+    int textTableSize;
+};
+
+dataLinkedList* allocateDataList(){
+    dataLinkedList *list=(dataLinkedList*)malloc(sizeof(dataLinkedList));
     return list;
 }
 
-data_linkedList* dataLinkedListInsert(data_linkedList* list, data_ht_item* item){
-    data_linkedList *node=allocateDataList();
+textLinkedList* allocateTextList(){
+    textLinkedList *list=(textLinkedList*)malloc(sizeof(textLinkedList));
+    return list;
+}
+
+dataLinkedList* dataLinkedListInsert(dataLinkedList* list, dataHashTableItem* item){
+    dataLinkedList *node=allocateDataList();
     node->dataItem=item;
     node->next=NULL;
     if(!list){
         list=node;
         return list;
     }
-    data_linkedList* temp=list;
+    dataLinkedList* temp=list;
     while(temp->next!=NULL){
         temp=temp->next;
     }
@@ -54,17 +73,37 @@ data_linkedList* dataLinkedListInsert(data_linkedList* list, data_ht_item* item)
     return list;
 }
 
-data_linkedList** create_dataOverflowBuckets(data_hashTable* table){
-    data_linkedList** buckets=(data_linkedList**)calloc(table->dataTableSize, sizeof(data_linkedList*));
+textLinkedList* textLinkedListInsert(textLinkedList* list, textHashTableItem* item){
+    textLinkedList *node=allocateTextList();
+    node->textItem=item;
+    node->next=NULL;
+    if(!list){
+        list=node;
+        return list;
+    }
+    textLinkedList* temp=list;
+    while(temp->next!=NULL){
+        temp=temp->next;
+    }
+    temp->next=node;
+    return list;
+}
+
+dataLinkedList** create_dataOverflowBuckets(dataHashTable* table){
+    dataLinkedList** buckets=(dataLinkedList**)calloc(table->dataTableSize, sizeof(dataLinkedList*));
     return buckets;
 }
 
-data_hashTable* create_dataTable(int size){
-    data_hashTable *table=(data_hashTable*)malloc(sizeof(data_hashTable));
+textLinkedList** create_textOverflowBuckets(textHashTable* table){
+    textLinkedList** buckets=(textLinkedList**)calloc(table->textTableSize, sizeof(textLinkedList*));
+    return buckets;
+}
+
+dataHashTable* createDataHashTable(int size){
+    dataHashTable *table=(dataHashTable*)malloc(sizeof(dataHashTable));
 
     table->dataTableSize=size;
-    table->dataCount=0;
-    table->dataItems=(data_ht_item**) calloc(table->dataTableSize,sizeof(data_ht_item*));
+    table->dataItems=(dataHashTableItem**) calloc(table->dataTableSize,sizeof(dataHashTableItem*));
 
     for(int i=0;i<table->dataTableSize;i++){
         table->dataItems[i]=NULL;
@@ -73,9 +112,21 @@ data_hashTable* create_dataTable(int size){
     return table;
 }
 
+textHashTable* createtextHashTable(int size){
+    textHashTable *table=(textHashTable*)malloc(sizeof(textHashTable));
 
-void handle_dataCollison(data_hashTable* table, long long index, data_ht_item* item){
-    data_linkedList* node=table->dataOverflowBuckets[index];
+    table->textTableSize=size;
+    table->textItems=(textHashTableItem**) calloc(table->textTableSize,sizeof(textHashTableItem*));
+
+    for(int i=0;i<table->textTableSize;i++){
+        table->textItems[i]=NULL;
+    }
+    table->textOverflowBuckets=create_textOverflowBuckets(table);
+    return table;
+}
+
+void handle_dataCollison(dataHashTable* table, long long index, dataHashTableItem* item){
+    dataLinkedList* node=table->dataOverflowBuckets[index];
 
     if(node==NULL){
         node=allocateDataList();
@@ -87,8 +138,21 @@ void handle_dataCollison(data_hashTable* table, long long index, data_ht_item* i
     }
 }
 
-data_ht_item* create_dataItem(string key, int size, int* array){
-    data_ht_item *item=new data_ht_item;
+void handle_textCollison(textHashTable* table, long long index, textHashTableItem* item){
+    textLinkedList* node=table->textOverflowBuckets[index];
+
+    if(node==NULL){
+        node=allocateTextList();
+        node->textItem=item;
+        table->textOverflowBuckets[index]=node;
+    }
+    else{
+        table->textOverflowBuckets[index]=textLinkedListInsert(node, item);
+    }
+}
+
+dataHashTableItem* create_dataItem(string key, int size, int* array){
+    dataHashTableItem *item=new dataHashTableItem;
     //data_ht_item *item=(data_ht_item*)malloc(sizeof(data_ht_item));
 
     item->key=key;
@@ -97,17 +161,23 @@ data_ht_item* create_dataItem(string key, int size, int* array){
     cout<<item->array[0]<<endl;
     return item;
 }
+textHashTableItem* create_textItem(string key, int line){
+    textHashTableItem *item=new textHashTableItem;
 
-void data_ht_insert(data_hashTable *table, string key,int size,int* array){
-    data_ht_item* item=create_dataItem(key,size,array);
+    item->key=key;
+    item->line=line;
+    return item;
+}
+
+void data_ht_insert(dataHashTable *table, string key,int size,int* array){
+    dataHashTableItem* item=create_dataItem(key,size,array);
 
     long long index=getHashValue(key);
     data_index.push_back(index);
-    cout<<"HashValue: "<<index<<endl;
-    data_ht_item* curr_item=table->dataItems[index];
+
+    dataHashTableItem* curr_item=table->dataItems[index];
     if(curr_item==NULL){
         table->dataItems[index]=item;
-        table->dataCount++;
     }
     else{
         if(curr_item->key==key){
@@ -119,7 +189,28 @@ void data_ht_insert(data_hashTable *table, string key,int size,int* array){
         }
     }
 }
-void print_data_table(data_hashTable* table) {
+
+void text_ht_insert(textHashTable *table, string key,int line){
+    textHashTableItem* item=create_textItem(key, line);
+
+    long long index=getHashValue(key);
+    text_index.push_back(index);
+
+    textHashTableItem* curr_item=table->textItems[index];
+    if(curr_item==NULL){
+        table->textItems[index]=item;
+    }
+    else{
+        if(curr_item->key==key){
+            curr_item->line=line;
+        }
+        else{
+            handle_textCollison(table, index,item);
+        }
+    }
+}
+
+void print_data_table(dataHashTable* table) {
     printf("\n-------------------\n");
     int memory=0x10010000;
     for (int i:data_index) {
@@ -130,7 +221,7 @@ void print_data_table(data_hashTable* table) {
             printf("%#x\n",memory);
             memory+=p;
             if (table->dataOverflowBuckets[i]) {
-                data_linkedList* head = table->dataOverflowBuckets[i];
+                dataLinkedList* head = table->dataOverflowBuckets[i];
                 while (head) {
                     size=head->dataItem->size;
                     p=ceil(size/4)*4;
@@ -145,20 +236,63 @@ void print_data_table(data_hashTable* table) {
     }
     printf("-------------------\n");
 }
+void print_text_table(textHashTable* table) {
+    printf("\n-------------------\n");
+    int memory=0x00400000 ;
+    for (int i:text_index) {
+        if (table->textItems[i]) {
+            int line=table->textItems[i]->line;
+            int p=line*4;
+            cout<<table->textItems[i]->key<<" ";
+            printf("%#x\n",memory);
+        
+            if (table->textOverflowBuckets[i]) {
+                textLinkedList* head = table->textOverflowBuckets[i];
+                while (head) {
+                    line=head->textItem->line;
+                    cout<<head->textItem->key<<" ";
+                    printf("%#x\n",memory+p);
+                    head = head->next;
+                    p=line*4;
+                }
+            }
+            printf("\n");
+        }
+    }
+    printf("-------------------\n");
+}
  
-int* ht_search(data_hashTable* table, string key){
+dataHashTableItem* data_ht_search(dataHashTable* table, string key){
     int index=getHashValue(key);
-    data_ht_item *item=table->dataItems[index];
-    data_linkedList* node=table->dataOverflowBuckets[index];
+    dataHashTableItem *item=table->dataItems[index];
+    dataLinkedList* node=table->dataOverflowBuckets[index];
 
     while(item!=NULL){
         if(item->key==key){
-            return item->array;
+            return item;
         }
         if(node==NULL){
             return NULL;
         }
         item=node->dataItem;
+        node=node->next;
+    }
+    return NULL;
+}
+
+textHashTableItem* text_ht_search(textHashTable* table, string key){
+    int index=getHashValue(key);
+    textHashTableItem *item=table->textItems[index];
+    textLinkedList* node=table->textOverflowBuckets[index];
+
+    while(item!=NULL){
+        if(item->key==key){
+            return item;
+        }
+        if(node==NULL){
+            return NULL;
+        }
+        item=node->textItem;
         node=node->next;
     }
     return NULL;
@@ -179,12 +313,19 @@ struct BST{
         }
     public:
         struct BST *insertBST(T1 label, T2 line, struct BST *temp){
+
             if(temp==NULL){
                     temp=newNode(label, line);
                     return temp;
             }
-            else if(label>temp->labelName)return insertBST(label, line, temp->right);
-            else if(label<temp->labelName)return insertBST(label, line, temp->left);
+            else if(label>temp->labelName){
+                temp->right= insertBST(label, line, temp->right);
+                return temp;
+            }
+            else if(label<temp->labelName){
+                temp->left= insertBST(label, line, temp->left);
+                return temp;
+            }
         }
         T2 searchBST( struct BST *temp, T1 label){
             if(temp==NULL)
@@ -197,6 +338,16 @@ struct BST{
 
             return searchBST(temp->left, label);
         }
+        void free_children(struct BST *temp){
+            if(temp->left!=NULL)free_children(temp->left);
+            if(temp->right!=NULL)free_children(temp->right);
+            free(temp);
+        }
+        // void printBST(BST* temp){
+        //     if(temp==NULL)return;
+        //     printBST(temp->left);
+        //     printBST(temp->right);
+        // }
 };
 
 #endif

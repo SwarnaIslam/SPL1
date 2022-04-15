@@ -36,15 +36,15 @@ void checkValid16BitInteger(string tempNumber){
 		reportAndExit("Number out of range. Negative number should be greater than or equal to -65536");
 	}
 }
-void checkValidDestination(long long hashOfRd,string instructionLine){
+void checkValidDestination(long long hashOfRd){
     if(registers[hashOfRd].regName==""||registers[hashOfRd].regName=="$zero"||registers[hashOfRd].regName=="$at"){
-        reportAndExit("Destination register must be from the valid registers(Note:$zero is not modifiable and $at is reserved for assembler)",instructionLine);
+        reportAndExit("Destination register must be from the valid registers(Note:$zero is not modifiable and $at is reserved for assembler)");
     }
 }
 
-void checkValidSource(long long hashOfSrc,string instructionLine){
+void checkValidSource(long long hashOfSrc){
     if(registers[hashOfSrc].regName==""||registers[hashOfSrc].regName=="$at"){
-        reportAndExit("Source register must be from the valid registers(Note:$at is reserved for assembler)",instructionLine);
+        reportAndExit("Source register must be from the valid registers(Note:$at is reserved for assembler)");
     }
 }
 bool isValidKeyword(string token){

@@ -10,12 +10,12 @@ enum SysCode{
     scanInt=5,
     hexOfInt=34
 };
-void checkValidReg(long long hashOfRd, long long hashOfRs,long long hashOfRt, string instructionLine){
-    checkValidDestination(hashOfRd,instructionLine);
-    checkValidSource(hashOfRs,instructionLine);
-    checkValidSource(hashOfRt,instructionLine);
+void checkValidReg(long long hashOfRd, long long hashOfRs,long long hashOfRt){
+    checkValidDestination(hashOfRd);
+    checkValidSource(hashOfRs);
+    checkValidSource(hashOfRt);
 }
-void syscall(vector<string>command,string instructionLine){
+void syscall(vector<string>command){
     string input;
     long long hashValue=getHashValue("$v0");
     int32_t val=registers[hashValue].value;
@@ -42,19 +42,19 @@ void syscall(vector<string>command,string instructionLine){
         printf("%X\n\n",val);
         break;
     default:
-        reportAndExit("Invalid system call",instructionLine);
+        reportAndExit("Invalid system call");
         break;
     }
 }
-void add(vector<string>command,string instructionLine){
+void add(vector<string>command){
     if(command.size()!=4){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
     long long hashOfRt=getHashValue(command[3]);
 
-    checkValidReg(hashOfRd,hashOfRs,hashOfRt,instructionLine);
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt);
 
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
@@ -62,16 +62,16 @@ void add(vector<string>command,string instructionLine){
     //cout<<to_string((long long)valRs+(long long)valRt)<<endl;
     registers[hashOfRd].value=valRs+valRt;
 }
-void sub(vector<string>command,string instructionLine){
+void sub(vector<string>command){
     //cout<<"nor: "<<endl;
     if(command.size()!=4){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
     long long hashOfRt=getHashValue(command[3]);
 
-    checkValidReg(hashOfRd,hashOfRs,hashOfRt,instructionLine);
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt);
 
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
@@ -80,15 +80,15 @@ void sub(vector<string>command,string instructionLine){
     checkValid32BitInteger(to_string(valRd));
     registers[hashOfRd].value=valRd;
 }
-void mul(vector<string>command,string instructionLine){
+void mul(vector<string>command){
     if(command.size()!=4){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
     long long hashOfRt=getHashValue(command[3]);
 
-    checkValidReg(hashOfRd,hashOfRs,hashOfRt,instructionLine);
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt);
 
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
@@ -97,16 +97,16 @@ void mul(vector<string>command,string instructionLine){
     //cout<<"Multiplication: "<<valRd<<endl;
 }
 
-void mult(vector<string>command,string instructionLine){
+void mult(vector<string>command){
     //cout<<"Entered mult:"<<endl;
     if(command.size()!=3){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRs=getHashValue(command[1]);
     long long hashOfRt=getHashValue(command[2]);
 
-    checkValidSource(hashOfRs,instructionLine);
-    checkValidSource(hashOfRt,instructionLine);
+    checkValidSource(hashOfRs);
+    checkValidSource(hashOfRt);
 
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
@@ -121,16 +121,16 @@ void mult(vector<string>command,string instructionLine){
 
     //cout<<LO.value<<" "<<HI.value<<endl;
 }
-void div(vector<string>command,string instructionLine){
+void div(vector<string>command){
     //cout<<"Entered mult:"<<endl;
     if(command.size()!=3){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRs=getHashValue(command[1]);
     long long hashOfRt=getHashValue(command[2]);
 
-    checkValidSource(hashOfRs,instructionLine);
-    checkValidSource(hashOfRt,instructionLine);
+    checkValidSource(hashOfRs);
+    checkValidSource(hashOfRt);
 
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
@@ -145,37 +145,37 @@ void div(vector<string>command,string instructionLine){
     //cout<<LO.value<<" "<<HI.value<<endl;
 }
 
-void mflo(vector<string>command,string instructionLine){
+void mflo(vector<string>command){
     if(command.size()!=2){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
 
-    checkValidDestination(hashOfRd,instructionLine);
+    checkValidDestination(hashOfRd);
 
     int32_t valLo=LO.value;
     registers[hashOfRd].value=valLo;
 }
-void mfhi(vector<string>command,string instructionLine){
+void mfhi(vector<string>command){
     if(command.size()!=2){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
 
-    checkValidDestination(hashOfRd,instructionLine);
+    checkValidDestination(hashOfRd);
 
     int32_t valHI=HI.value;
     registers[hashOfRd].value=valHI;
 }
-void sll(vector<string>command,string instructionLine){
+void sll(vector<string>command){
     if(command.size()!=4){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
 
-    checkValidDestination(hashOfRd,instructionLine);
-    checkValidSource(hashOfRs,instructionLine);
+    checkValidDestination(hashOfRd);
+    checkValidSource(hashOfRs);
 
     checkValid32BitInteger(command[3]);
     int shift_amount=stoi(command[3]);
@@ -187,15 +187,15 @@ void sll(vector<string>command,string instructionLine){
     registers[hashOfRd].regName=command[1];
     //cout<<"Sll result: "<<registers[hashOfRd].value<<" "<<valOfRs<<endl;                                                                                                                                                                                                                                                                                                                         
 }
-void sllv(vector<string>command,string instructionLine){
+void sllv(vector<string>command){
     if(command.size()!=4){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
     long long hashOfRt=getHashValue(command[3]);
 
-    checkValidReg(hashOfRd,hashOfRs,hashOfRt,instructionLine);
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt);
 
     int shift_amount=registers[hashOfRt].value;
     if(shift_amount>31||shift_amount<0){
@@ -206,15 +206,15 @@ void sllv(vector<string>command,string instructionLine){
     registers[hashOfRd].regName=command[1];
     //cout<<"Sll result: "<<registers[hashOfRd].value<<" "<<valOfRs<<endl;                                                                                                                                                                                                                                                                                                                         
 }
-void srl(vector<string>command,string instructionLine){
+void srl(vector<string>command){
     if(command.size()!=4){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
 
-    checkValidDestination(hashOfRd,instructionLine);
-    checkValidSource(hashOfRs,instructionLine);
+    checkValidDestination(hashOfRd);
+    checkValidSource(hashOfRs);
 
     checkValid32BitInteger(command[3]);
     int shift_amount=stoi(command[3]);
@@ -226,15 +226,15 @@ void srl(vector<string>command,string instructionLine){
     registers[hashOfRd].regName=command[1];
     //cout<<"Sll result: "<<registers[hashOfRd].value<<" "<<valOfRs<<endl;                                                                                                                                                                                                                                                                                                                         
 }
-void srlv(vector<string>command,string instructionLine){
+void srlv(vector<string>command){
     if(command.size()!=4){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
     long long hashOfRt=getHashValue(command[3]);
 
-    checkValidReg(hashOfRd,hashOfRs,hashOfRt,instructionLine);
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt);
 
     int shift_amount=registers[hashOfRt].value;
     if(shift_amount>31||shift_amount<0){
@@ -245,15 +245,15 @@ void srlv(vector<string>command,string instructionLine){
     registers[hashOfRd].regName=command[1];
     //cout<<"Sll result: "<<registers[hashOfRd].value<<" "<<valOfRs<<endl;                                                                                                                                                                                                                                                                                                                         
 }
-void sra(vector<string>command,string instructionLine){
+void sra(vector<string>command){
     if(command.size()!=4){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
 
-    checkValidDestination(hashOfRd,instructionLine);
-    checkValidSource(hashOfRs,instructionLine);
+    checkValidDestination(hashOfRd);
+    checkValidSource(hashOfRs);
 
     checkValid32BitInteger(command[3]);
     int shift_amount=stoi(command[3]);
@@ -266,15 +266,15 @@ void sra(vector<string>command,string instructionLine){
     registers[hashOfRd].regName=command[1];
     //cout<<"Sll result: "<<registers[hashOfRd].value<<" "<<valOfRs<<endl;                                                                                                                                                                                                                                                                                                                         
 }
-void srav(vector<string>command,string instructionLine){
+void srav(vector<string>command){
     if(command.size()!=4){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
     long long hashOfRt=getHashValue(command[3]);
 
-    checkValidReg(hashOfRd,hashOfRs,hashOfRt,instructionLine);
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt);
 
     int shift_amount=registers[hashOfRt].value;
     if(shift_amount>31||shift_amount<0){
@@ -285,96 +285,96 @@ void srav(vector<string>command,string instructionLine){
     registers[hashOfRd].regName=command[1];
     //cout<<"Sll result: "<<registers[hashOfRd].value<<" "<<valOfRs<<endl;                                                                                                                                                                                                                                                                                                                         
 }
-void And(vector<string>command,string instructionLine){
+void And(vector<string>command){
     //cout<<"and: "<<endl;
     if(command.size()!=4){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
     long long hashOfRt=getHashValue(command[3]);
 
-    checkValidReg(hashOfRd,hashOfRs,hashOfRt,instructionLine);
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt);
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
     int32_t valRd=userDefinedAnd(valRs,valRt);
     registers[hashOfRd].value=valRd;
 }
 
-void Or(vector<string>command,string instructionLine){
+void Or(vector<string>command){
     //cout<<"or: "<<endl;
     if(command.size()!=4){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
     long long hashOfRt=getHashValue(command[3]);
 
-    checkValidReg(hashOfRd,hashOfRs,hashOfRt,instructionLine);
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt);
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
     int32_t valRd=userDefinedOr(valRs,valRt);
     registers[hashOfRd].value=valRd;
 }
-int Xor(vector<string>command,string instructionLine){
+int Xor(vector<string>command){
     //cout<<"xor: "<<endl;
     if(command.size()!=4){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
     long long hashOfRt=getHashValue(command[3]);
 
-    checkValidReg(hashOfRd,hashOfRs,hashOfRt,instructionLine);
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt);
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
     int32_t valRd=userDefinedXor(valRs,valRt);
     registers[hashOfRd].value=valRd;
     return valRd;
 }
-void Nor(vector<string>command,string instructionLine){
+void Nor(vector<string>command){
     //cout<<"nor: "<<endl;
     if(command.size()!=4){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
     long long hashOfRt=getHashValue(command[3]);
 
-    checkValidReg(hashOfRd,hashOfRs,hashOfRt,instructionLine);
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt);
 
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
     int32_t valRd=userDefinedNor(valRs,valRt);
     registers[hashOfRd].value=valRd;
 }
-void Not(vector<string>command,string instructionLine){
+void Not(vector<string>command){
     //cout<<"not: "<<endl;
     if(command.size()!=3){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
 
-    checkValidDestination(hashOfRd,instructionLine);
-    checkValidSource(hashOfRs,instructionLine);
+    checkValidDestination(hashOfRd);
+    checkValidSource(hashOfRs);
 
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRd=userDefinedNot(valRs);
     registers[hashOfRd].value=valRd;
 }
 
-void abs(vector<string>command,string instructionLine){
+void abs(vector<string>command){
     //cout<<"not: "<<endl;
     if(command.size()!=3){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
     string pseudoReg=getAvailableTempReg(command[2]);
 
-    checkValidDestination(hashOfRd,instructionLine);
-    checkValidSource(hashOfRs,instructionLine);
+    checkValidDestination(hashOfRd);
+    checkValidSource(hashOfRs);
 
     cout<<"Performing pseudo instruction..."<<endl;
     cout<<command[0]<<" "<<command[1]<<" "<<command[2]<<endl<<endl;

@@ -5,15 +5,15 @@
 #include"format.h"
 #include "Math.h"
 using namespace std;
-void addi(vector<string>command,string instructionLine){
+void addi(vector<string>command){
     if(command.size()!=4){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
-    checkValidDestination(hashOfRd,instructionLine);
+    checkValidDestination(hashOfRd);
 
     long long hashOfRs=getHashValue(command[2]);
-    checkValidSource(hashOfRs,instructionLine);
+    checkValidSource(hashOfRs);
 
     string tempNumber=command[3];
     checkValid32BitInteger(tempNumber);
@@ -24,9 +24,9 @@ void addi(vector<string>command,string instructionLine){
     //cout<<to_string((long long)valRs+(long long)valImm)<<endl;
     registers[hashOfRd].value=valRs+valImm;
 }
-void li(vector<string>command,string instructionLine){
+void li(vector<string>command){
     if(command.size()!=3){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     checkValid32BitInteger(command[2]);
     cout<<"Performing pseudo instruction..."<<endl;
@@ -41,19 +41,19 @@ void li(vector<string>command,string instructionLine){
     printf("ori %s $at %X\n\n",command[1].c_str(),lowerBits);
 
     long long hashOfRd=getHashValue(command[1]);
-    checkValidDestination(hashOfRd,instructionLine);
+    checkValidDestination(hashOfRd);
     registers[hashOfRd].value=number;
-    //cout<<command[1]<<" li: "<<registers[hashOfRd].value<<endl;
+    
 }
-void andi(vector<string>command,string instructionLine){
+void andi(vector<string>command){
     if(command.size()!=4){
-        reportAndExit("Invalid operation in text section",instructionLine);
+        reportAndExit("Invalid operation in text section");
     }
     long long hashOfRd=getHashValue(command[1]);
-    checkValidDestination(hashOfRd,instructionLine);
+    checkValidDestination(hashOfRd);
 
     long long hashOfRs=getHashValue(command[2]);
-    checkValidSource(hashOfRs,instructionLine);
+    checkValidSource(hashOfRs);
 
     checkValid16BitInteger(command[3]);
     int16_t val1=registers[hashOfRs].value;

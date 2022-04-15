@@ -54,16 +54,16 @@ vector<string>split(char unTrimmedInstruction[],int s,int instructionLine){
     }
     return trimmedInstruction;
 }
-void trim(vector<string>instruction,vector<string>trimmedInstruction[],int instructionNumber){
+void trim(vector<string>instruction){
     int insNumber=0;
-	for(int i=0;i<instructionNumber;i++){
+	for(int i=0;i<def::numberOfInstruction;i++){
         //cout<<instruction[i]<<endl;
 		int InsLength=instruction[i].length()+1;
 		char tempIns[InsLength];
 		for(int j=0;j<InsLength;j++){
 			tempIns[j]=instruction[i][j];
 		}
-		trimmedInstruction[insNumber++]=split(tempIns,InsLength,i);
+		def::trimmedInstruction[insNumber++]=split(tempIns,InsLength,i);
 	}
 }
 #endif

@@ -1,33 +1,30 @@
 #ifndef DEFINITION_H
 #define DEFINITION_H
 #include<vector>
-#include"debugger.h"
 #include"Algorithm.h"
+#define CAPACITY 10009
+
 using namespace std;
-int numberOfInstruction;
-int dataIndex,textIndex;
 vector<string>keywords;
-BST<string, int> *dataLabelRoot=NULL;
-BST<string, int> *textLabelRoot=NULL;
+namespace def{
+    int PC=0;
+    int numberOfInstruction=0;
+    int dataStart=0;
+    int textStart=0;
+    int dataEnd=0;
+    int textEnd=0;
+    vector<string>trimmedInstruction[1000];
+    BST<string,int> *operators;
+    dataHashTable* dataTable;
+    textHashTable* textTable;
+}
 struct Reg{
     string regName="";
     int32_t value=0;
 };
 Reg registers[200000];
 Reg LO, HI;
-void setDataLabel(string labelNme,int line){
-    dataLabelRoot=dataLabelRoot->insertBST(labelNme,line,dataLabelRoot);
-}
-void setTextLabel(string labelNme,int line){
-    textLabelRoot=textLabelRoot->insertBST(labelNme,line,textLabelRoot);
-}
 
-struct BST<string,int> *getDataLabel(){
-    return dataLabelRoot;
-}
-struct BST<string,int> *getTextLabel(){
-    return textLabelRoot;
-}
 void defineKeywords(){
     vector<string>tempKeywords{"li","la","add","addi","mul","div","j","jal","bne","beq","move","syscall",".data",".text",".word"};
     for(int i=0;i<tempKeywords.size();i++){
@@ -45,6 +42,15 @@ void defineRegisters(){
         registers[hashValue].value=0;
     }
 }
+void defineOperators(){
+    vector<string>tempOperators{"li","la","add","sub","addi","mul","mult","mflo","mfhi","div","sll","sllv","srl","srlv","sra","srav","and","or","not","xor","nor","abs","andi","j","jal","bne","beq","move","syscall"};
+    BST<string, int>*temp=NULL;
+    for(string op: tempOperators){
+
+        temp=temp->insertBST(op,-1,temp);
+    }
+    def::operators=temp;
+}
 string getAvailableTempReg(string Rs, string Rt=""){
     vector<string>temporary{"$t0","$t1","$t2","$t3","$t4","$t5","$t6","$t7","$t8","$t9"};
     for(auto reg: temporary){
@@ -54,71 +60,85 @@ string getAvailableTempReg(string Rs, string Rt=""){
     }
 }
 void defineNumberOfInstruction(int lineOfCode){
-    numberOfInstruction=lineOfCode;
+    def::numberOfInstruction=lineOfCode;
 }
-int getNumberOfInstruction(){
-    return numberOfInstruction;
-}
-int defineDataIndex(vector<string>trimmedInstruction[]){
+
+int defineDataStart(){
     int i=0;
     int dataFlag=0;
     int dataLine=-1;
     string isData=".data";
-    //cout<<"loc:"<<numberOfInstruction<<endl;
-    for(i=0;i<numberOfInstruction;i++){
-        //cout<<trimmedInstruction[i][0]<<endl;
-        if(trimmedInstruction[i][0]!=""){
-            if(dataFlag==1&&trimmedInstruction[i][0].c_str()==isData){
-                reportAndExit("More than one .data have been found!");
+    
+    for(i=0;i<def::numberOfInstruction;i++){
+    
+        if(def::trimmedInstruction[i][0]!=""){
+            if(dataFlag== 1 && def::trimmedInstruction[i][0].c_str()==isData){
+                cout<<"More than one .data have been found!"<<endl;
+                exit(1);
             }
-            if(trimmedInstruction[i][0].c_str()==isData){
+            if(def::trimmedInstruction[i][0].c_str()==isData){
                 dataFlag=1;
                 dataLine=i;
             }
         }
     }
-    if(dataFlag==0)
-        reportAndExit(".data section not found!");
+    if(dataFlag==0){
+        cout<<".data section not found!"<<endl;
+        exit(1);
+    }
     return dataLine;
 }
-int defineTextIndex(vector<string>trimmedInstruction[]){
+int defineTextStart(){
     int i=0;
     int textFlag=0;
     int textLine=-1;
     string isText=".text";
-    for(i=0;i<numberOfInstruction;i++){
-        if(textFlag==1&&trimmedInstruction[i][0].c_str()==isText){
-            reportAndExit("More than one .text have been found!");
+    for(i=0;i<def::numberOfInstruction;i++){
+        if(textFlag== 1 && def::trimmedInstruction[i][0].c_str()==isText){
+            cout<<"More than one .text have been found!"<<endl;
+            exit(1);
         }
-        if(trimmedInstruction[i][0].c_str()==isText){
+        if(def::trimmedInstruction[i][0].c_str()==isText){
             textFlag=1;
             textLine=i;
         }
     }
-    if(textFlag==0)
-        reportAndExit(".text section not found!");
+    if(textFlag==0){
+        cout<<".text section not found!"<<endl;
+        exit(1);
+    }
     return textLine;
 }
-void defineSectionIndex(vector<string>trimmedInstruction[]){
-    dataIndex=defineDataIndex(trimmedInstruction);
-    //cout<<"success defining data in"<<endl;
-    textIndex=defineTextIndex(trimmedInstruction);
-    //cout<<"success defining text in"<<endl;
+int sectionEndIndex(int start1, int start2){
+    int end=-1;
+    if(start1>start2){
+        end=def::numberOfInstruction;
+    }
+    else{
+        if(start1+1==start2){
+            return end;
+        }
+        else{
+            end=start2;
+        }
+    }
+    return end;
 }
-int getDataIndex(){
-    return dataIndex;
+void defineSectionIndex(){
+    def::dataStart=defineDataStart();
+    def::textStart=defineTextStart();
+
+    def::dataEnd=sectionEndIndex(def::dataStart,def::textStart);
+    def::textEnd=sectionEndIndex(def::textStart,def::dataStart);
 }
-int getTextIndex(){
-    return textIndex;
-}
-void define(vector<string>trimmedInstruction[],int lineOfCode){
+void define(){
     defineKeywords();
     //cout<<"success defining op"<<endl;
 	defineRegisters();
+    defineOperators();
     //cout<<"success defining reg"<<endl;
-    defineNumberOfInstruction(lineOfCode);
     //cout<<"success defining loc"<<endl;
-    defineSectionIndex(trimmedInstruction);
+    defineSectionIndex();
     //cout<<"success defining sec in"<<endl;
 }
 

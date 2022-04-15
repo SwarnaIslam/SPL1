@@ -1,7 +1,7 @@
 #ifndef EXECUTION_H
 #define EXECUTION_H
 #include"operator.h"
-vector<string>trimmedInstruction[1000];
+#include"spliter.h"
 vector<string>instruction;
 void getInstruction(string pathName){
 	int lineOfCode=0;
@@ -23,12 +23,13 @@ void getInstruction(string pathName){
 void startExecution(string pathName){
     getInstruction(pathName);
 	//cout<<"success1"<<endl;
-    trim(instruction,trimmedInstruction,instruction.size());
+	defineNumberOfInstruction(instruction.size());
+	trim(instruction);
 	//cout<<"success2"<<endl;
-    define(trimmedInstruction,instruction.size());
+    define();
 	//cout<<"success3"<<endl;
-	getLabel(trimmedInstruction);
+	getLabel();
 	//cout<<"successfully got label"<<endl;
-	executeInstruction(trimmedInstruction);
+	executeInstruction();
 }
 #endif

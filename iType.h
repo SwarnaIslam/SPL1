@@ -16,7 +16,7 @@ void addi(vector<string>command){
     checkValidSource(hashOfRs);
 
     string tempNumber=command[3];
-    checkValid32BitInteger(tempNumber);
+    checkValid16BitInteger(tempNumber);
 
     int32_t valRs=registers[hashOfRs].value;
     int32_t valImm=stol(tempNumber);
@@ -29,16 +29,9 @@ void li(vector<string>command){
         reportAndExit("Invalid operation in text section");
     }
     checkValid32BitInteger(command[2]);
-    cout<<"Performing pseudo instruction..."<<endl;
-    cout<<command[0]<<" "<<command[1]<<" "<<command[2]<<endl;
-    cout<<endl;
+    
     int32_t number=stoi(command[2]);
-    int16_t lowerBits=number;
-    int16_t higherBits=(number>>16);
-
-    cout<<"Details of this operation:"<<endl;
-    printf("lui $at %X\n",higherBits);
-    printf("ori %s $at %X\n\n",command[1].c_str(),lowerBits);
+    extension(command);
 
     long long hashOfRd=getHashValue(command[1]);
     checkValidDestination(hashOfRd);

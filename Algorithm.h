@@ -82,8 +82,14 @@ textLinkedList* textLinkedListInsert(textLinkedList* list, textHashTableItem* it
         return list;
     }
     textLinkedList* temp=list;
-    while(temp->next!=NULL){
-        temp=temp->next;
+    while(1){
+        if(temp->next!=NULL)
+            temp=temp->next;
+        if(temp->textItem->key==item->key){
+            temp->textItem->line=item->line;
+        }
+
+        if(temp->next==NULL)break;
     }
     temp->next=node;
     return list;
@@ -158,7 +164,7 @@ dataHashTableItem* create_dataItem(string key, int size, int* array){
     item->key=key;
     item->size=size;
     item->array=array;
-    cout<<item->array[0]<<endl;
+    //cout<<item->array[0]<<endl;
     return item;
 }
 textHashTableItem* create_textItem(string key, int line){
@@ -239,13 +245,13 @@ void print_data_table(dataHashTable* table) {
 void print_text_table(textHashTable* table) {
     printf("\n-------------------\n");
     int memory=0x00400000 ;
+    int p=0;
     for (int i:text_index) {
         if (table->textItems[i]) {
             int line=table->textItems[i]->line;
-            int p=line*4;
             cout<<table->textItems[i]->key<<" ";
-            printf("%#x\n",memory);
-        
+            printf("%#x\n",memory+p);
+            p=line*4;
             if (table->textOverflowBuckets[i]) {
                 textLinkedList* head = table->textOverflowBuckets[i];
                 while (head) {
@@ -330,8 +336,11 @@ struct BST{
         T2 searchBST( struct BST *temp, T1 label){
             if(temp==NULL)
                 return 0;
-            else if (temp->labelName == label)
+            else if (temp->labelName == label){
+                //cout<<temp->labelName<<endl;
                 return temp->lineNumber;
+            }
+            //cout<<temp->labelName<<endl;
             
             if (temp->labelName < label)
             return searchBST(temp->right, label);

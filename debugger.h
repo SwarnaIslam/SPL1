@@ -4,7 +4,11 @@
 #include"definition.h"
 using namespace std;
 void reportAndExit(string errorMessage){
-    cout<<"Error: "<<errorMessage<<" at line "<<def::PC+1<<endl;
+    cout<<"Error: "<<errorMessage<<endl;
+    exit(1);
+}
+void reportAndExit(string errorMessage, int line){
+    cout<<"Error: "<<errorMessage<<" at line "<<line+1<<endl;
     exit(1);
 }
 void warning(string errorMessage, string instructionLine=""){

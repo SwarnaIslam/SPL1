@@ -4,6 +4,7 @@
 #include"definition.h"
 #include"format.h"
 #include"Math.h"
+#include"psedo.h"
 using namespace std;
 enum SysCode{
     printInt=1,
@@ -45,6 +46,15 @@ void syscall(vector<string>command){
         reportAndExit("Invalid system call");
         break;
     }
+}
+void move(vector<string>command){
+    long long hashOfRd=getHashValue(command[1]);
+    long long hashOfRs=getHashValue(command[2]);
+    if(command.size()!=3){
+        reportAndExit("Invalid operation in text section");
+    }
+    extension(command);
+    registers[hashOfRd].value=registers[hashOfRs].value;
 }
 void add(vector<string>command){
     if(command.size()!=4){
@@ -371,18 +381,11 @@ void abs(vector<string>command){
     }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
-    string pseudoReg=getAvailableTempReg(command[2]);
 
     checkValidDestination(hashOfRd);
     checkValidSource(hashOfRs);
-
-    cout<<"Performing pseudo instruction..."<<endl;
-    cout<<command[0]<<" "<<command[1]<<" "<<command[2]<<endl<<endl;
-
-    cout<<"Details of this operation:"<<endl;
-    cout<<"sra "<<pseudoReg<<" "<<command[2]<<" "<<31<<endl;
-    cout<<"xor "<<command[2]<<" "<<command[2]<<" "<<pseudoReg<<endl;
-    cout<<"sub "<<command[1]<<" "<<command[2]<<" "<<pseudoReg<<endl;
+    
+    extension(command);
 
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRd=abs(valRs);

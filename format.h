@@ -1,5 +1,6 @@
 #ifndef FORMAT_H
 #define FORMAT_H
+#include"definition.h"
 void isNumber(string tempNumber){
     for(int32_t i=0;i<tempNumber.size();i++) //check that each character is a digit
 	{
@@ -16,22 +17,22 @@ void isNumber(string tempNumber){
 void checkValid32BitInteger(string tempNumber){
     isNumber(tempNumber);
     //cout<<tempNumber.substr(1)<<endl;
-	if(tempNumber[0]!='-'&&tempNumber>"2147483647"&&tempNumber.length()>=10)
+	if(tempNumber[0]!='-'&&stoi(tempNumber)>2147483647)
 	{
 		reportAndExit("Number out of range. Positive number shouble be less than 2147483648");
 	}
-	else if(tempNumber[0]=='-' && tempNumber.substr(1)>"2147483648"&&tempNumber.substr(1).length()>=10) //same check as above for negative integers
+	else if(tempNumber[0]=='-' && stoi(tempNumber)<-2147483648) //same check as above for negative integers
 	{
 		reportAndExit("Number out of range. Negative number should be greater than or equal to -2147483648");
 	}
 }
 void checkValid16BitInteger(string tempNumber){
     isNumber(tempNumber);
-	if(tempNumber[0]!='-'&&tempNumber>"65535"&&tempNumber.length()>=5)
+	if(tempNumber[0]!='-'&&stoi(tempNumber)>32767)
 	{
-		reportAndExit("Number out of range. Positive number shouble be less than 65536");
+		reportAndExit("Number out of range. Positive number shouble be less than 32,767");
 	}
-	else if(tempNumber[0]=='-' && tempNumber.substr(1)>"65536"&&tempNumber.substr(1).length()>=5) //same check as above for negative integers
+	else if(tempNumber[0]=='-' && stoi(tempNumber)<-32768) //same check as above for negative integers
 	{
 		reportAndExit("Number out of range. Negative number should be greater than or equal to -65536");
 	}
@@ -48,13 +49,12 @@ void checkValidSource(long long hashOfSrc){
     }
 }
 bool isValidKeyword(string token){
-    vector<string>tempOperations=getKeywords();
-    for(int i=0;i<tempOperations.size();i++){
-        if(tempOperations[i]==token){
-            return true;
-        }
+    //vector<string>tempOperations=getKeywords();
+    //cout<<def::operators->searchBST(def::operators,token)<<endl;
+    if(def::operators->searchBST(def::operators,token)==0){
+        return false;
     }
-    return false;
+    return true;
 }
 bool isValidLabel(string token){
     if(isValidKeyword(token))return false;

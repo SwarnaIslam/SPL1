@@ -5,19 +5,6 @@
 #include"rType.h"
 #include"iType.h"
 #include"Algorithm.h"
-void move(vector<string>command){
-    long long hashOfRd=getHashValue(command[1]);
-    long long hashOfRs=getHashValue(command[2]);
-    if(command.size()!=3){
-        reportAndExit("Invalid operation in text section");
-    }
-    cout<<"Performing pseudo instruction..."<<endl;
-    cout<<command[0]<<" "<<command[1]<<" "<<command[2]<<endl;
-    cout<<endl;
-    cout<<"Details of this operation:"<<endl;
-    cout<<"add"<<" "<<command[1]<<" "<<"$zero"<<" "<<command[2]<<endl;
-    registers[hashOfRd].value=registers[hashOfRs].value;
-}
 void perform(long long hashOfOp,vector<string>command){
     if(hashOfOp==getHashValue("move")){
         move(command);
@@ -98,25 +85,27 @@ void executeInstruction(){
     int textEnd=0;
     string instructionLine="";
     
-    for(def::PC=def::textStart+1;def::PC<def::textEnd;def::PC++){
-        string tempOperator=def::trimmedInstruction[def::PC][0];
+    for(int i=def::textStart+1;i<def::textEnd;i++){
+        string tempOperator=def::trimmedInstruction[i][0];
         if(tempOperator==""){
             continue;
         }
     
         int labelFound=tempOperator.find(':');
-        bool operatorFound=(def::operators->searchBST(def::operators,tempOperator)!=0)?true:false;
+        bool operatorFound=def::operators->searchBST(def::operators,tempOperator);
         if(labelFound>0&&labelFound<tempOperator.size()){
             tempOperator=tempOperator.substr(0,labelFound);
         }
-        if(operatorFound==false&& text_ht_search(def::textTable,tempOperator)==NULL){
-            reportAndExit("Invalid operation in text section");
+        bool flag=def::detectLabel->searchBST(def::detectLabel, tempOperator);
+        if(operatorFound==false&& flag==false){
+            reportAndExit("Invalid operation in text section",i);
         }
         else{
             long long hashOfTempOp=getHashValue(tempOperator);
-            perform(hashOfTempOp,def::trimmedInstruction[def::PC]);
+            perform(hashOfTempOp,def::trimmedInstruction[i]);
         }
-        
+        def::detectLabel->free_children(def::detectLabel);
+        free(def::detectLabel);
     }
 }
 #endif

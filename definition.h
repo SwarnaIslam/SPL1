@@ -15,6 +15,7 @@ namespace def{
     int textEnd=0;
     vector<string>trimmedInstruction[1000];
     BST<string,int> *operators;
+    BST<string, int>*detectLabel;
     dataHashTable* dataTable;
     textHashTable* textTable;
 }
@@ -25,12 +26,7 @@ struct Reg{
 Reg registers[200000];
 Reg LO, HI;
 
-void defineKeywords(){
-    vector<string>tempKeywords{"li","la","add","addi","mul","div","j","jal","bne","beq","move","syscall",".data",".text",".word"};
-    for(int i=0;i<tempKeywords.size();i++){
-        keywords.push_back(tempKeywords[i]);
-    }
-}
+
 vector<string> getKeywords(){
     return keywords;
 }
@@ -51,14 +47,7 @@ void defineOperators(){
     }
     def::operators=temp;
 }
-string getAvailableTempReg(string Rs, string Rt=""){
-    vector<string>temporary{"$t0","$t1","$t2","$t3","$t4","$t5","$t6","$t7","$t8","$t9"};
-    for(auto reg: temporary){
-        if(reg!=Rs&& reg!=Rt){
-            return reg;
-        }
-    }
-}
+
 void defineNumberOfInstruction(int lineOfCode){
     def::numberOfInstruction=lineOfCode;
 }
@@ -132,7 +121,7 @@ void defineSectionIndex(){
     def::textEnd=sectionEndIndex(def::textStart,def::dataStart);
 }
 void define(){
-    defineKeywords();
+    def::textTable=createtextHashTable(CAPACITY);
     //cout<<"success defining op"<<endl;
 	defineRegisters();
     defineOperators();

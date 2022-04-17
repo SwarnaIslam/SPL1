@@ -23,6 +23,7 @@ struct dataHashTableItem{
 };
 struct textHashTableItem{
     string key;
+    int address;
     int line;
 };
 struct dataLinkedList{
@@ -167,10 +168,11 @@ dataHashTableItem* create_dataItem(string key, int size, int* array){
     //cout<<item->array[0]<<endl;
     return item;
 }
-textHashTableItem* create_textItem(string key, int line){
+textHashTableItem* create_textItem(string key, int address, int line){
     textHashTableItem *item=new textHashTableItem;
 
     item->key=key;
+    item->address=address;
     item->line=line;
     return item;
 }
@@ -196,8 +198,8 @@ void data_ht_insert(dataHashTable *table, string key,int size,int* array){
     }
 }
 
-void text_ht_insert(textHashTable *table, string key,int line){
-    textHashTableItem* item=create_textItem(key, line);
+void text_ht_insert(textHashTable *table, string key,int address,int line){
+    textHashTableItem* item=create_textItem(key, address, line);
 
     long long index=getHashValue(key);
     text_index.push_back(index);
@@ -245,21 +247,20 @@ void print_data_table(dataHashTable* table) {
 void print_text_table(textHashTable* table) {
     printf("\n-------------------\n");
     int memory=0x00400000 ;
-    int p=0;
+    int pc=0;
     for (int i:text_index) {
         if (table->textItems[i]) {
             int line=table->textItems[i]->line;
+            pc=4*table->textItems[i]->address;
             cout<<table->textItems[i]->key<<" ";
-            printf("%#x\n",memory+p);
-            p=line*4;
+            printf("%#x\n",memory+pc);
             if (table->textOverflowBuckets[i]) {
                 textLinkedList* head = table->textOverflowBuckets[i];
                 while (head) {
-                    line=head->textItem->line;
+                    pc=4*head->textItem->address;
                     cout<<head->textItem->key<<" ";
-                    printf("%#x\n",memory+p);
+                    printf("%#x\n",pc);
                     head = head->next;
-                    p=line*4;
                 }
             }
             printf("\n");

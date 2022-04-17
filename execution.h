@@ -30,6 +30,9 @@ void startExecution(string pathName){
 	//cout<<"success3"<<endl;
 	getLabel();
 	//cout<<"successfully got label"<<endl;
+	defineProgramCounter();
+	//cout<<"Successful defining PC"<<endl;
 	executeInstruction();
+	//cout<<"SuccessFull execution"<<endl;
 }
 #endif

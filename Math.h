@@ -1,7 +1,45 @@
 #ifndef MATH_H
 #define MATH_H
 #include<iostream>
+#include"debugger.h"
 using namespace std;
+void isNumber(string tempNumber){
+    for(int32_t i=0;i<tempNumber.size();i++) //check that each character is a digit
+	{
+		if(tempNumber[i]=='-'&&i==0) //ignore minus sign
+		{
+			continue;
+		}
+		if(tempNumber[i]<'0'||tempNumber[i]>'9')
+		{
+            cout<<tempNumber[i]<<endl;
+			//reportAndExit("Specified value is not a number");
+		}
+	}
+}
+void checkValid32BitInteger(string tempNumber){
+    isNumber(tempNumber);
+    //cout<<tempNumber.substr(1)<<endl;
+	if(tempNumber[0]!='-'&&stoi(tempNumber)>2147483647)
+	{
+		reportAndExit("Number out of range. Positive number shouble be less than 2147483648");
+	}
+	else if(tempNumber[0]=='-' && stoi(tempNumber)<-2147483648) //same check as above for negative integers
+	{
+		reportAndExit("Number out of range. Negative number should be greater than or equal to -2147483648");
+	}
+}
+void checkValid16BitInteger(string tempNumber){
+    isNumber(tempNumber);
+	if(tempNumber[0]!='-'&&stoi(tempNumber)>32767)
+	{
+		reportAndExit("Number out of range. Positive number shouble be less than 32,767");
+	}
+	else if(tempNumber[0]=='-' && stoi(tempNumber)<-32768) //same check as above for negative integers
+	{
+		reportAndExit("Number out of range. Negative number should be greater than or equal to -65536");
+	}
+}
 string twos_complement(string binVal){
     for(int i=0;i<32;i++)binVal[i]=(binVal[i]=='0')?'1':'0';
     char carry='1';

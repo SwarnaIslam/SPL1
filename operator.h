@@ -4,86 +4,93 @@
 #include"definition.h"
 #include"rType.h"
 #include"iType.h"
+#include"psedo.h"
 #include"Algorithm.h"
-void perform(long long hashOfOp,vector<string>command){
-    if(hashOfOp==getHashValue("move")){
+void perform(vector<string>command){
+    if(command[0]==("move")){
         move(command);
     }
-    else if(hashOfOp==getHashValue("li")){
+    else if(command[0]==("li")){
         //cout<<"entered if li"<<endl;
         li(command);
     }
-    else if(hashOfOp==getHashValue("syscall")){
+    else if(command[0]==("syscall")){
         syscall(command);
     }
-    else if(hashOfOp==getHashValue("add")){
+    else if(command[0]==("add")){
         add(command);
     }
-    else if(hashOfOp==getHashValue("addi")){
+    else if(command[0]==("addi")){
         addi(command);
     }
-    else if(hashOfOp==getHashValue("mul")){
+    else if(command[0]==("mul")){
         mul(command);
     }
-    else if(hashOfOp==getHashValue("mult")){
+    else if(command[0]==("mult")){
         mult(command);
     }
-    else if(hashOfOp==getHashValue("div")){
+    else if(command[0]==("div")){
         div(command);
     }
-    else if(hashOfOp==getHashValue("mflo")){
+    else if(command[0]==("mflo")){
         mflo(command);
     }
-    else if(hashOfOp==getHashValue("mfhi")){
+    else if(command[0]==("mfhi")){
         mfhi(command);
     }
-    else if(hashOfOp==getHashValue("sll")){
+    else if(command[0]==("sll")){
         sll(command);
     }
-    else if(hashOfOp==getHashValue("sllv")){
+    else if(command[0]==("sllv")){
         sllv(command);
     }
-    else if(hashOfOp==getHashValue("srl")){
+    else if(command[0]==("srl")){
         srl(command);
     }
-    else if(hashOfOp==getHashValue("srlv")){
+    else if(command[0]==("srlv")){
         srlv(command);
     }
-    else if(hashOfOp==getHashValue("sra")){
+    else if(command[0]==("sra")){
         sra(command);
     }
-    else if(hashOfOp==getHashValue("srav")){
+    else if(command[0]==("srav")){
         srav(command);
     }
-    else if(hashOfOp==getHashValue("and")){
+    else if(command[0]==("and")){
         And(command);
     }
-    else if(hashOfOp==getHashValue("or")){
+    else if(command[0]==("or")){
         Or(command);
     }
-    else if(hashOfOp==getHashValue("not")){
+    else if(command[0]==("not")){
         Not(command);
     }
-    else if(hashOfOp==getHashValue("xor")){
+    else if(command[0]==("xor")){
         Xor(command);
     }
-    else if(hashOfOp==getHashValue("nor")){
+    else if(command[0]==("nor")){
         Nor(command);
     }
-    else if(hashOfOp==getHashValue("andi")){
+    else if(command[0]==("andi")){
         andi(command);
     }
-    else if(hashOfOp==getHashValue("sub")){
+    else if(command[0]==("sub")){
         sub(command);
     }
-    else if(hashOfOp==getHashValue("abs")){
+    else if(command[0]==("abs")){
         abs(command);
+    }
+    else if(command[0]==("ori")){
+        ori(command);
+    }
+    else if(command[0]=="lui"){
+        lui(command);
+    }
+    else if(command[0]=="subu"){
+        subu(command);
     }
 }
 void executeInstruction(){
-
-    int textEnd=0;
-    string instructionLine="";
     
     for(int i=def::textStart+1;i<def::textEnd;i++){
         string tempOperator=def::trimmedInstruction[i][0];
@@ -91,19 +98,13 @@ void executeInstruction(){
             continue;
         }
     
-        int labelFound=tempOperator.find(':');
         bool operatorFound=def::operators->searchBST(def::operators,tempOperator);
-        if(labelFound>0&&labelFound<tempOperator.size()){
-            tempOperator=tempOperator.substr(0,labelFound);
-        }
-        bool flag=def::detectLabel->searchBST(def::detectLabel, tempOperator);
-        if(operatorFound==false&& flag==false){
-            reportAndExit("Invalid operation in text section",i);
-        }
-        else{
+        if(operatorFound==true){
             long long hashOfTempOp=getHashValue(tempOperator);
-            perform(hashOfTempOp,def::trimmedInstruction[i]);
+            perform(def::trimmedInstruction[i]);
         }
+    }
+    if(def::detectLabel!=NULL){
         def::detectLabel->free_children(def::detectLabel);
         free(def::detectLabel);
     }

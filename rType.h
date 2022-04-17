@@ -23,6 +23,7 @@ void syscall(vector<string>command){
     switch (val)
     {
     case printInt:
+        //cout<<"Successful printing"<<endl;
         hashValue=getHashValue("$a0");
         val=registers[hashValue].value;
         cout<<"Printing integer: ";
@@ -68,7 +69,7 @@ void add(vector<string>command){
 
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
-    checkValid32BitInteger(to_string((long long)valRs+(long long)valRt));
+    checkValid32BitInteger(to_string((long long)valRs+(long long)valRt));// overflow trap
     //cout<<to_string((long long)valRs+(long long)valRt)<<endl;
     registers[hashOfRd].value=valRs+valRt;
 }
@@ -85,7 +86,27 @@ void sub(vector<string>command){
 
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
-    long long valRd=(long long)valRs-(long long)valRt;
+    checkValid32BitInteger(to_string((long long)valRs-(long long)valRt));
+    int32_t valRd=valRs-valRt;
+    
+    checkValid32BitInteger(to_string(valRd));
+    registers[hashOfRd].value=valRd;
+}
+void subu(vector<string>command){
+    //cout<<"nor: "<<endl;
+    if(command.size()!=4){
+        reportAndExit("Invalid operation in text section");
+    }
+    long long hashOfRd=getHashValue(command[1]);
+    long long hashOfRs=getHashValue(command[2]);
+    long long hashOfRt=getHashValue(command[3]);
+
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt);
+
+    int32_t valRs=registers[hashOfRs].value;
+    int32_t valRt=registers[hashOfRt].value;
+
+    int32_t valRd=(long long)valRs-(long long)valRt;
     
     checkValid32BitInteger(to_string(valRd));
     registers[hashOfRd].value=valRd;

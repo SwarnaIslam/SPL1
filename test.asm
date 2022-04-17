@@ -1,18 +1,9 @@
 .data
-num: .word -9 
-.text
-main:
-li $t0 -9
 
-move $a0 $t0
-abs $a0 $a0
+.text
+li $t0 -2147483648
+li $t1 2
+subu $a0 $t0 $t1
 
 li $v0 1
 syscall
-lalala:
-
-lulululu:
-li $t0 -1
-li $t1 2147483647
-
-sub $t2 $t0 $t1

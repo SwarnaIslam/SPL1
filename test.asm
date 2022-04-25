@@ -1,9 +1,16 @@
 .data
 
 .text
-li $t0 -2147483648
-li $t1 2
-subu $a0 $t0 $t1
+lbl1:
+li $t0 1
+li $t1 12
+blt $t0 $t1 adding
+
+
+adding:
+add $a0 $zero $t0
 
 li $v0 1
 syscall
+
+exit:

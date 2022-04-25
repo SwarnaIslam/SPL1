@@ -72,6 +72,7 @@ int32_t getNumber(string binResult){
     //cout<<binResult<<"="<<binVal1<<"&"<<binVal2<<endl;
     return number;
 }
+
 string getBinaryValue(int32_t value){
     string binVal="";
     if(value==0)binVal="0"+binVal;
@@ -98,6 +99,16 @@ string getBinaryValue(int32_t value){
     }
     //cout<<value<<" = "<<binVal<<endl;
     return binVal;
+}
+long long getUnsignedNumber(string value){
+    string binResult=getBinaryValue(stoi(value));
+    long long number=0;
+    long long p=1;
+    for(int i=binResult.size()-1;i>=0;i--){
+        if(binResult[i]=='1')number+=p;
+        p*=2;
+    }
+    return number;
 }
 int32_t userDefinedAnd(int32_t val1, int32_t val2){
     string binVal1=getBinaryValue(val1);

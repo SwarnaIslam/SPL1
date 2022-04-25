@@ -15,8 +15,6 @@ void checkValidSource(long long hashOfSrc){
     }
 }
 bool isValidKeyword(string token){
-    //vector<string>tempOperations=getKeywords();
-    //cout<<def::operators->searchBST(def::operators,token)<<endl;
     if(def::operators->searchBST(def::operators,token)==0){
         return false;
     }

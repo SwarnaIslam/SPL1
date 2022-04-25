@@ -37,7 +37,7 @@ void defineRegisters(){
     }
 }
 void defineOperators(){
-    vector<string>tempOperators{"li","lui","la","add","sub","subu","addi","mul","mult","mflo","mfhi","div","sll","sllv","srl","srlv","sra","srav","and","or","ori","not","xor","nor","abs","andi","j","jal","bne","beq","move","syscall"};
+    vector<string>tempOperators{"li","lui","la","add","sub","subu","addi","mul","mult","mflo","mfhi","div","sll","sllv","srl","srlv","sra","srav","and","or","ori","not","xor","nor","abs","andi","j","jal","bne","beq","blt","bgt","move","syscall","slt","slti","sltu","sgt"};
     BST<string, int>*temp=NULL;
     for(string op: tempOperators){
 
@@ -126,54 +126,65 @@ void nextInstruction(int currInd){
         checkValid32BitInteger(tempNumber);
         int number=stoi(tempNumber);
         if(number<=32767 && number>=-32768){
-            k++;
+            k++;//addiu
         }
         else{
-            k+=2;
+            k+=2;//lui & ori
         }
     }
     else if(op=="abs"){
         k+=3;
+    }
+    else if(op=="blt"){
+        k+=2;
     }
     else if(op=="ori"){
         string tempNumber=def::trimmedInstruction[currInd][3];
         checkValid32BitInteger(tempNumber);
         int number=stoi(tempNumber);
         if(number<65536 && number>=0){
-            k++;
+            k++;// ori
         }
         else{
-            k+=2;
+            k+=3;//lui, ori & or
         }
     }
     else{
         k++;
     }
 }
+bool isLabel(string tempLabel){
+    int labelIndex=tempLabel.find(':');
+    if(labelIndex>0&&labelIndex<tempLabel.size()){
+        tempLabel=tempLabel.substr(0,labelIndex);
+    }
+    bool labelFound=def::detectLabel->searchBST(def::detectLabel, tempLabel);
+    if(labelFound){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
 void defineProgramCounter(){
     def::textTable=createtextHashTable(CAPACITY);
     for(int i=def::textStart+1;i<def::textEnd;i++){
         string tempInstruction=def::trimmedInstruction[i][0];
+        //cout<<"Definition: "<<tempInstruction<<endl;
         if(tempInstruction==""){
             continue;
         }
-    
-        int labelFound=tempInstruction.find(':');
-        bool operatorFound=def::operators->searchBST(def::operators,tempInstruction);
-        if(labelFound>0&&labelFound<tempInstruction.size()){
-            tempInstruction=tempInstruction.substr(0,labelFound);
+        int labelIndex=tempInstruction.find(':');
+        if(labelIndex>0&&labelIndex<tempInstruction.size()){
+            tempInstruction=tempInstruction.substr(0,labelIndex);
         }
-        bool flag=def::detectLabel->searchBST(def::detectLabel, tempInstruction);
-        if(flag==true){
-            int j=i+1;
-            if(j<def::textEnd){
-                string op=def::trimmedInstruction[j][0];
-                while(j<def::textEnd && def::operators->searchBST(def::operators, op)==0)j++;
-                text_ht_insert(def::textTable,tempInstruction,k,j);
-            }
+        bool labelFound=isLabel(tempInstruction);
+        bool operatorFound=def::operators->searchBST(def::operators,tempInstruction);
+        if(labelFound==true){
+            text_ht_insert(def::textTable,tempInstruction,k,i);
         }
         else if(operatorFound==false){
-            reportAndExit("Invalid operation in text section",i);
+            cout<<"Invalid operation in text section"<<endl;
         }
         else{
             nextInstruction(i);

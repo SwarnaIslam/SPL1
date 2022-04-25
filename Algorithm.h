@@ -253,7 +253,7 @@ void print_text_table(textHashTable* table) {
             int line=table->textItems[i]->line;
             pc=4*table->textItems[i]->address;
             cout<<table->textItems[i]->key<<" ";
-            printf("%#x\n",memory+pc);
+            printf("%#x, %d\n",memory+pc, table->textItems[i]->line);
             if (table->textOverflowBuckets[i]) {
                 textLinkedList* head = table->textOverflowBuckets[i];
                 while (head) {
@@ -270,7 +270,7 @@ void print_text_table(textHashTable* table) {
 }
  
 dataHashTableItem* data_ht_search(dataHashTable* table, string key){
-    int index=getHashValue(key);
+    long long index=getHashValue(key);
     dataHashTableItem *item=table->dataItems[index];
     dataLinkedList* node=table->dataOverflowBuckets[index];
 
@@ -291,9 +291,11 @@ textHashTableItem* text_ht_search(textHashTable* table, string key){
     int index=getHashValue(key);
     textHashTableItem *item=table->textItems[index];
     textLinkedList* node=table->textOverflowBuckets[index];
-
+    //cout<<"Hash value of label: "<<index<<endl;
     while(item!=NULL){
+        //cout<<"Items key: "<<item->key<<endl;
         if(item->key==key){
+            //cout<<"found text item!"<<endl;
             return item;
         }
         if(node==NULL){
@@ -302,6 +304,7 @@ textHashTableItem* text_ht_search(textHashTable* table, string key){
         item=node->textItem;
         node=node->next;
     }
+   // cout<<"Item is NULL"<<endl;
     return NULL;
 }
 template<typename T1, typename T2>

@@ -412,5 +412,55 @@ void abs(vector<string>command){
     int32_t valRd=abs(valRs);
     registers[hashOfRd].value=valRd;
 }
+void slt(vector<string>command){
+    if(command.size()!=4){
+        reportAndExit("Invalid operation in text section");
+    }
+    long long hashOfRd=getHashValue(command[1]);
+    long long hashOfRs=getHashValue(command[2]);
+    long long hashOfRt=getHashValue(command[3]);
+
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt);
+
+    int32_t valRs=registers[hashOfRs].value;
+    int32_t valRt=registers[hashOfRt].value;
+    int32_t valRd=(valRs<valRt)?1:0;
+    
+    registers[hashOfRd].value=valRd;
+}
+void sgt(vector<string>command){
+    if(command.size()!=4){
+        reportAndExit("Invalid operation in text section");
+    }
+    long long hashOfRd=getHashValue(command[1]);
+    long long hashOfRs=getHashValue(command[2]);
+    long long hashOfRt=getHashValue(command[3]);
+
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt);
+    extension(command);
+
+    int32_t valRs=registers[hashOfRs].value;
+    int32_t valRt=registers[hashOfRt].value;
+    int32_t valRd=(valRs>valRt)?1:0;
+    
+    registers[hashOfRd].value=valRd;
+}
+void sltu(vector<string>command){
+    if(command.size()!=4){
+        reportAndExit("Invalid operation in text section");
+    }
+    long long hashOfRd=getHashValue(command[1]);
+    long long hashOfRs=getHashValue(command[2]);
+    long long hashOfRt=getHashValue(command[3]);
+
+    checkValidReg(hashOfRd,hashOfRs,hashOfRt);
+
+    long long valRs=getUnsignedNumber(command[2]);
+    long long valRt=getUnsignedNumber(command[3]);
+
+    int32_t valRd=(valRs<valRt)?1:0;
+    
+    registers[hashOfRd].value=valRd;
+}
 
 #endif

@@ -6,12 +6,11 @@
 #include"iType.h"
 #include"psedo.h"
 #include"Algorithm.h"
-void perform(vector<string>command){
+int perform(vector<string>command, int currLine){
     if(command[0]==("move")){
         move(command);
     }
     else if(command[0]==("li")){
-        //cout<<"entered if li"<<endl;
         li(command);
     }
     else if(command[0]==("syscall")){
@@ -89,6 +88,43 @@ void perform(vector<string>command){
     else if(command[0]=="subu"){
         subu(command);
     }
+    else if(command[0]==("slt")){
+        slt(command);
+    }
+    else if(command[0]==("slti")){
+        slti(command);
+    }
+    else if(command[0]=="sltu"){
+        sltu(command);
+    }
+    else if(command[0]=="sgt"){
+        sgt(command);
+    }
+    else if(command[0]=="beq"){
+        int newLine = beq(command);
+        if(newLine>=0){
+            return newLine;
+        }
+    }
+    else if(command[0]=="bne"){
+        int newLine = bne(command);
+        if(newLine>=0){
+            return newLine;
+        }
+    }
+    else if(command[0]=="blt"){
+        int newLine = blt(command);
+        if(newLine>=0){
+            return newLine;
+        }
+    }
+    else if(command[0]=="bgt"){
+        int newLine = bgt(command);
+        if(newLine>=0){
+            return newLine;
+        }
+    }
+    return currLine;
 }
 void executeInstruction(){
     
@@ -101,7 +137,7 @@ void executeInstruction(){
         bool operatorFound=def::operators->searchBST(def::operators,tempOperator);
         if(operatorFound==true){
             long long hashOfTempOp=getHashValue(tempOperator);
-            perform(def::trimmedInstruction[i]);
+            i=perform(def::trimmedInstruction[i],i);
         }
     }
     if(def::detectLabel!=NULL){

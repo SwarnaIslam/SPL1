@@ -6,7 +6,7 @@
 #include"format.h"
 using namespace std;
 enum Instructions{
-    ABS, LI, MOVE, LW, ORI
+    ABS, LI, MOVE, LW, ORI, SGT,BLT, BGT
 };
 map<string, Instructions>strToEnum;
 void initialize(){
@@ -15,6 +15,9 @@ void initialize(){
     strToEnum["abs"]=ABS;
     strToEnum["lw"]=LW;
     strToEnum["ori"]=ORI;
+    strToEnum["sgt"]=SGT;
+    strToEnum["blt"]=BLT;
+    strToEnum["bgt"]=BGT;
 }
 void absExtension(vector<string>command){
 
@@ -54,6 +57,17 @@ void oriExtension(vector<string>command){
         cout<<"or "<<command[1]<<" "<<command[2]<<" $at"<<endl;
     }
 }
+void sgtExtension(vector<string>command){
+    cout<<"slt"<<" "<<command[1]<<" "<<command[3]<<" "<<command[2]<<endl;
+}
+void bltExtension(vector<string>command){
+    cout<<"slt"<<" $at "<<command[1]<<" "<<command[2]<<endl;
+    cout<<"bne $at $zero "<<command[3]<<endl;
+}
+void bgtExtension(vector<string>command){
+    cout<<"slt"<<" $at "<<command[2]<<" "<<command[1]<<endl;
+    cout<<"bne $at $zero "<<command[3]<<endl;
+}
 void extension(vector<string>command){
     initialize();
     cout<<"Performing pseudo instruction..."<<endl;
@@ -76,6 +90,15 @@ void extension(vector<string>command){
             break;
         case ORI:
             oriExtension(command);
+            break;
+        case SGT:
+            sgtExtension(command);
+            break;
+        case BLT:
+            bltExtension(command);
+            break;
+        case BGT:
+            bgtExtension(command);
             break;
 
         default:

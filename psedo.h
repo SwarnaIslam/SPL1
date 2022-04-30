@@ -1,82 +1,75 @@
 #ifndef PSEUDO_H
 #define PSEUDO_H
-#include<iostream>
 #include<vector>
 #include<map>
 #include"format.h"
+#include"definition.h"
+#include"Algorithm.h"
 using namespace std;
 enum Instructions{
-    ABS, LI, MOVE, LW, ORI, SGT,BLT, BGT
+    ABS=1, LI=2, MOVE=3, ORI=4, SGT=5,BLT=6, BGT=7
 };
 map<string, Instructions>strToEnum;
 void initialize(){
     strToEnum["move"]=MOVE;
     strToEnum["li"]=LI;
     strToEnum["abs"]=ABS;
-    strToEnum["lw"]=LW;
     strToEnum["ori"]=ORI;
     strToEnum["sgt"]=SGT;
     strToEnum["blt"]=BLT;
     strToEnum["bgt"]=BGT;
 }
 void absExtension(vector<string>command){
-
-    cout<<"sra "<<"$at"<<" "<<command[2]<<" "<<31<<endl;
-    cout<<"xor "<<command[1]<<" "<<command[2]<<" "<<"$at"<<endl;
-    cout<<"subu "<<command[1]<<" "<<command[1]<<" "<<"$at"<<endl;
+    def::trimmedInstruction[def::trimLen++]=vector<string>{"sra","$at",command[2],"31"};
+    def::trimmedInstruction[def::trimLen++]=vector<string>{"xor",command[1], command[2],"$at"};
+    def::trimmedInstruction[def::trimLen++]=vector<string>{"subu",command[1],command[1],"$at"};
 }
 
 void liExtension(vector<string>command){
     int number=stoi(command[2]);
     if(number<=32767 && number>=-32768){
-        cout<<"addiu "<<command[1]<<" $0 "<<command[2]<<endl;
+        def::trimmedInstruction[def::trimLen++]=vector<string>{"addiu",command[1],"$zero", command[2]};
     }
     else{
         int16_t lowerBits=number;
         int16_t higherBits=(number>>16);
 
-        printf("lui $at %#x\n",higherBits);
-        printf("ori %s $at %#x\n",command[1].c_str(),lowerBits);
+        def::trimmedInstruction[def::trimLen++]=vector<string>{"lui","$at", to_string(higherBits)};
+        def::trimmedInstruction[def::trimLen++]=vector<string>{"ori",command[1],"$at",to_string(lowerBits)};
     }
 }
 void moveExtension(vector<string>command){
-    cout<<"add"<<" "<<command[1]<<" "<<"$zero"<<" "<<command[2]<<endl;
+    def::trimmedInstruction[def::trimLen++]=vector<string>{"add",command[1],"$zero", command[2]};
 }
 
 void oriExtension(vector<string>command){
     int number=stoi(command[3]);
     if(number<65536 && number>=0){
-        cout<<"ori "<<command[1]<<" "<<command[2]<<endl;
+        def::trimmedInstruction[def::trimLen++]=vector<string>{"ori",command[1],command[2]};
     }
     else{
         int16_t lowerBits=number;
         int16_t higherBits=(number>>16);
 
-        printf("lui $at %#x\n",higherBits);
-        printf("ori $at $at %#x\n",lowerBits);
-        cout<<"or "<<command[1]<<" "<<command[2]<<" $at"<<endl;
+        def::trimmedInstruction[def::trimLen++]=vector<string>{"lui","$at",to_string(higherBits)};
+        def::trimmedInstruction[def::trimLen++]=vector<string>{"ori","$at","$at", to_string(lowerBits)};
+        def::trimmedInstruction[def::trimLen++]=vector<string>{"or",command[1],command[2],"$at"};
     }
 }
 void sgtExtension(vector<string>command){
-    cout<<"slt"<<" "<<command[1]<<" "<<command[3]<<" "<<command[2]<<endl;
+    def::trimmedInstruction[def::trimLen++]=vector<string>{"slt",command[1],command[3],command[2]};
 }
 void bltExtension(vector<string>command){
-    cout<<"slt"<<" $at "<<command[1]<<" "<<command[2]<<endl;
-    cout<<"bne $at $zero "<<command[3]<<endl;
+    def::trimmedInstruction[def::trimLen++]=vector<string>{"slt","$at",command[1],command[2]};
+    def::trimmedInstruction[def::trimLen++]=vector<string>{"bne","$at","$zero",command[3]};
 }
 void bgtExtension(vector<string>command){
-    cout<<"slt"<<" $at "<<command[2]<<" "<<command[1]<<endl;
-    cout<<"bne $at $zero "<<command[3]<<endl;
+    def::trimmedInstruction[def::trimLen++]=vector<string>{"slt","$at",command[2], command[1]};
+    def::trimmedInstruction[def::trimLen++]=vector<string>{"bne","$at","$zero",command[3]};
 }
+
 void extension(vector<string>command){
     initialize();
-    cout<<"Performing pseudo instruction..."<<endl;
-    for(string token: command){
-        cout<<token<<" ";
-    }
-    cout<<endl<<endl;
-
-    cout<<"Details of this operation:"<<endl;
     switch (strToEnum[command[0]])
     {
         case ABS:
@@ -100,10 +93,8 @@ void extension(vector<string>command){
         case BGT:
             bgtExtension(command);
             break;
-
         default:
             break;
     }
-    cout<<endl;
 }
 #endif

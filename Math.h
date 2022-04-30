@@ -12,12 +12,13 @@ void isNumber(string tempNumber){
 		}
 		if(tempNumber[i]<'0'||tempNumber[i]>'9')
 		{
-            cout<<tempNumber[i]<<endl;
-			//reportAndExit("Specified value is not a number");
+            //cout<<tempNumber<<endl;
+			reportAndExit("Specified value is not a number");
 		}
 	}
 }
 void checkValid32BitInteger(string tempNumber){
+    //cout<<"Math: "<<tempNumber<<endl;
     isNumber(tempNumber);
     //cout<<tempNumber.substr(1)<<endl;
 	if(tempNumber[0]!='-'&&stoi(tempNumber)>2147483647)
@@ -30,6 +31,7 @@ void checkValid32BitInteger(string tempNumber){
 	}
 }
 void checkValid16BitInteger(string tempNumber){
+   // cout<<"Math: "<<tempNumber<<endl;
     isNumber(tempNumber);
 	if(tempNumber[0]!='-'&&stoi(tempNumber)>32767)
 	{

@@ -2,17 +2,55 @@
 #define FORMAT_H
 #include"definition.h"
 #include"math.h"
+bool isLabel(string tempLabel){
+    int labelIndex=tempLabel.find(':');
+    if(labelIndex>0&&labelIndex<tempLabel.size()){
+        tempLabel=tempLabel.substr(0,labelIndex);
+    }
+    bool labelFound=def::detectLabel->searchBST(def::detectLabel, tempLabel);
+    if(labelFound){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+string removeWhiteSpace(string token){
+    string temp="";
+    for(int i=0;token[i]!='\0';i++){
+        if(token[i]!=' '&&token[i]!='\t'&&token[i]!='\0'&&token[i]!='\r'&&token[i]!='\n'){
+            //cout<<token[i]<<endl;
+            temp.push_back(token[i]);
+        }
+    } 
+    //cout<<"Format: "<<temp<<endl;
+    return temp;   
+}
+void checkRegister(string tempReg){
+    vector<string>registers{"$zero","$at","$v0","$v1","$a0","$a1","$a2","$a3","$t0","$t1","$t2","$t3","$t4","$t5","$t6","$t7","$s0","$s1","$s2","$s3","$s4","$s5","$s6","$s7","$t8","$t9","$k0","$k1","$gp","$sp","$fp","$ra"};
 
-void checkValidDestination(long long hashOfRd){
-    if(registers[hashOfRd].regName==""||registers[hashOfRd].regName=="$zero"||registers[hashOfRd].regName=="$at"){
+    for(string reg:registers){
+        if(tempReg==reg){
+            return;
+        }
+    }
+    reportAndExit("Expected register");
+}
+void checkValidDestination(string regName){
+    if(regName==""||regName=="$zero"){
         reportAndExit("Destination register must be from the valid registers(Note:$zero is not modifiable and $at is reserved for assembler)");
     }
 }
 
-void checkValidSource(long long hashOfSrc){
-    if(registers[hashOfSrc].regName==""||registers[hashOfSrc].regName=="$at"){
+void checkValidSource(string regName){
+    if(regName==""||regName=="$at"){
         reportAndExit("Source register must be from the valid registers(Note:$at is reserved for assembler)");
     }
+}
+void checkValidReg(string Rd, string Rs,string Rt){
+    checkValidDestination(Rd);
+    checkValidSource(Rs);
+    checkValidSource(Rt);
 }
 bool isValidKeyword(string token){
     if(def::operators->searchBST(def::operators,token)==0){

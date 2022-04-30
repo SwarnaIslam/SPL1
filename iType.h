@@ -7,14 +7,8 @@
 #include"psedo.h"
 using namespace std;
 void addi(vector<string>command){
-    if(command.size()!=4){
-        reportAndExit("Invalid operation in text section");
-    }
     long long hashOfRd=getHashValue(command[1]);
-    checkValidDestination(hashOfRd);
-
     long long hashOfRs=getHashValue(command[2]);
-    checkValidSource(hashOfRs);
 
     string tempNumber=command[3];
     checkValid16BitInteger(tempNumber);
@@ -22,33 +16,24 @@ void addi(vector<string>command){
     int32_t valRs=registers[hashOfRs].value;
     int32_t valImm=stoi(tempNumber);
     checkValid32BitInteger(to_string((long long)valRs+(long long)valImm));
-    //cout<<to_string((long long)valRs+(long long)valImm)<<endl;
+    registers[hashOfRd].value=valRs+valImm;
+    //cout<<command[1]<<" "<<registers[hashOfRd].value<<endl<<endl;
+}
+void addiu(vector<string>command){
+    long long hashOfRd=getHashValue(command[1]);
+    long long hashOfRs=getHashValue(command[2]);
+
+    string tempNumber=command[3];
+    checkValid16BitInteger(tempNumber);
+
+    int32_t valRs=registers[hashOfRs].value;
+    int32_t valImm=stoi(tempNumber);
+    //cout<<"addiu: "<<valRs+valImm<<endl;
     registers[hashOfRd].value=valRs+valImm;
 }
-void li(vector<string>command){
-    if(command.size()!=3){
-        reportAndExit("Invalid operation in text section");
-    }
-    checkValid32BitInteger(command[2]);
-    
-    int32_t valImm=stoi(command[2]);
-    extension(command);
-
-    long long hashOfRd=getHashValue(command[1]);
-    checkValidDestination(hashOfRd);
-    registers[hashOfRd].value=valImm;
-    //cout<<"End of executing li"<<endl;
-    
-}
 void andi(vector<string>command){
-    if(command.size()!=4){
-        reportAndExit("Invalid operation in text section");
-    }
     long long hashOfRd=getHashValue(command[1]);
-    checkValidDestination(hashOfRd);
-
     long long hashOfRs=getHashValue(command[2]);
-    checkValidSource(hashOfRs);
 
     checkValid16BitInteger(command[3]);
     int16_t valRs=registers[hashOfRs].value;
@@ -58,45 +43,23 @@ void andi(vector<string>command){
     registers[hashOfRd].value=valRd;
 }
 void ori(vector<string>command){
-    // cout<<"entered ori"<<endl;
-    if(command.size()!=4){
-        reportAndExit("Invalid operation in text section");
-    }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
 
-    checkValid32BitInteger(command[3]);
-    checkValidDestination(hashOfRd);
-    checkValidSource(hashOfRs);
-
     int32_t valRs=registers[hashOfRs].value;
     int32_t valImm=stoi(command[3]);
-    extension(command);
     int32_t valRd=userDefinedOr(valRs,valImm);
     registers[hashOfRd].value=valRd;
 }
 void lui(vector<string>command){
-    if(command.size()!=3){
-        reportAndExit("Invalid operation in text section");
-    }
     long long hashOfRd=getHashValue(command[1]);
-    checkValid16BitInteger(command[2]);
-
-    checkValidDestination(hashOfRd);
     int32_t valImm=stoi(command[2]);
     int32_t valRd=valImm<<16;
     registers[hashOfRd].value=valRd;
 }
 void slti(vector<string>command){
-    if(command.size()!=4){
-        reportAndExit("Invalid operation in text section");
-    }
     long long hashOfRd=getHashValue(command[1]);
     long long hashOfRs=getHashValue(command[2]);
-
-    checkValidDestination(hashOfRd);
-    checkValidSource(hashOfRs);
-    checkValid16BitInteger(command[3]);
 
     int32_t valRs=abs(registers[hashOfRs].value);
     int32_t valImm=stoi(command[3]);
@@ -105,105 +68,128 @@ void slti(vector<string>command){
     registers[hashOfRd].value=valRd;
 }
 int beq(vector<string>command){
-    if(command.size()!=4){
-        reportAndExit("Invalid operation in text section");
-    }
     long long hashOfRs=getHashValue(command[1]);
     long long hashOfRt=getHashValue(command[2]);
-
-    checkValidSource(hashOfRs);
-    checkValidSource(hashOfRt);
-    if(!isLabel(command[3])){
-        reportAndExit("Label not found");
-    }
 
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
 
     if(valRs==valRt){
-        //cout<<"Hi I am beq"<<endl;
         textHashTableItem* tempItem=text_ht_search(def::textTable,command[3]);
-        //cout<<"Line number of the branch instruction: "<<tempItem->line<<endl;
-        return tempItem->line;
+        int line=(tempItem->address-0x00400000)/4;
+        return line;
     }
 
     return -1;
 }
 int bne(vector<string>command){
-    if(command.size()!=4){
-        reportAndExit("Invalid operation in text section");
-    }
+
     long long hashOfRs=getHashValue(command[1]);
     long long hashOfRt=getHashValue(command[2]);
-
-    checkValidSource(hashOfRs);
-    checkValidSource(hashOfRt);
-    if(!isLabel(command[3])){
-        reportAndExit("Label not found");
-    }
-
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
-
+    //cout<<valRs<<" "<<valRt<<endl;
     if(valRs!=valRt){
-        //cout<<"Hi I am bne"<<endl;
         textHashTableItem* tempItem=text_ht_search(def::textTable,command[3]);
-        //cout<<"Line number of the branch instruction: "<<tempItem->line<<endl;
-        return tempItem->line;
+        //cout<<tempItem->address-0x00400000<<endl;
+        int line=(tempItem->address-0x00400000)/4;
+        //cout<<line<<endl;
+        return line;
     }
 
     return -1;
 }
-int blt(vector<string>command){
-    if(command.size()!=4){
-        reportAndExit("Invalid operation in text section");
+
+void lw(vector<string>command){
+    int base=0;
+    int offset=0;
+    int hashOfRd=getHashValue(command[1]);
+    int openingFound=command[2].find('(');
+    int len=command[2].length();
+    if(openingFound<len&&openingFound>=0){
+        int closingFound=command[2].find(')');
+
+        string tempRegister=command[2].substr(openingFound+1,closingFound-openingFound-1);
+        checkValidSource(tempRegister);
+
+        string temp=command[2].substr(0, openingFound);
+
+        dataHashTableItem* item=data_ht_search(def::dataTable,temp);
+        int hashOfRs=getHashValue(tempRegister);
+        if(item!=NULL){
+            base=item->byteSize;
+            offset=registers[hashOfRs].value;
+        }
+        else{
+            offset=stoi(temp);
+            base=registers[hashOfRs].value;
+        }
+
     }
-    long long hashOfRs=getHashValue(command[1]);
-    long long hashOfRt=getHashValue(command[2]);
-
-    checkValidSource(hashOfRs);
-    checkValidSource(hashOfRt);
-    if(!isLabel(command[3])){
-        reportAndExit("Label not found");
+    else{
+        dataHashTableItem* item=data_ht_search(def::dataTable,command[2]);
+        base=item->byteSize;
     }
-
-    int32_t valRs=registers[hashOfRs].value;
-    int32_t valRt=registers[hashOfRt].value;
-
-    extension(command);
-    if(valRs<valRt){
-        //cout<<"Hi I am bne"<<endl;
-        textHashTableItem* tempItem=text_ht_search(def::textTable,command[3]);
-        //cout<<"Line number of the branch instruction: "<<tempItem->key<<endl;
-        return tempItem->line;
+    if(base+offset<0x10010000|| base+offset>=0x15f6e100){
+        reportAndExit("Address out of bound 0x10010000");
     }
-
-    return -1;
+    
+    int index=(base+offset)-0x10010000;
+    if(index%4){
+        reportAndExit("Store address not aligned on word boundary");
+    }
+    //printf("%#x\n",base+offset);
+    index/=4;
+    //cout<<index<<" "<<def::Memory[index]<<endl;
+    registers[hashOfRd].value=def::Memory[index];
 }
-int bgt(vector<string>command){
-    if(command.size()!=4){
-        reportAndExit("Invalid operation in text section");
+void sw(vector<string>command){
+    int base=0;
+    int offset=0;
+    int hashOfRs=getHashValue(command[1]);
+    int openingFound=command[2].find('(');
+    int len=command[2].length();
+    if(openingFound<len&&openingFound>=0){
+        int closingFound=command[2].find(')');
+
+        string tempRegister=command[2].substr(openingFound+1,closingFound-openingFound-1);
+        checkValidSource(tempRegister);
+
+        string temp=command[2].substr(0, openingFound);
+
+        dataHashTableItem* item=data_ht_search(def::dataTable,temp);
+        int hashOfRd=getHashValue(tempRegister);
+        if(item!=NULL){
+            base=item->byteSize;
+            offset=registers[hashOfRd].value;
+        }
+        else{
+            offset=stoi(temp);
+            base=registers[hashOfRd].value;
+        }
+
     }
-    long long hashOfRs=getHashValue(command[1]);
-    long long hashOfRt=getHashValue(command[2]);
-
-    checkValidSource(hashOfRs);
-    checkValidSource(hashOfRt);
-    if(!isLabel(command[3])){
-        reportAndExit("Label not found");
+    else{
+        dataHashTableItem* item=data_ht_search(def::dataTable,command[2]);
+        base=item->byteSize;
+    }
+    if(base+offset<0x10010000||base+offset>=0x15f6e100){
+        reportAndExit("Address out of bound 0x10010000");
+    }
+    
+    int index=(base+offset)-0x10010000;
+    if(index%4){
+        reportAndExit("Store address not aligned on word boundary");
     }
 
-    int32_t valRs=registers[hashOfRs].value;
-    int32_t valRt=registers[hashOfRt].value;
+    index/=4;
+    def::Memory[index]=registers[hashOfRs].value;
 
-    extension(command);
-    if(valRs>valRt){
-        //cout<<"Hi I am bne"<<endl;
-        textHashTableItem* tempItem=text_ht_search(def::textTable,command[3]);
-        //cout<<"Line number of the branch instruction: "<<tempItem->line<<endl;
-        return tempItem->line;
-    }
-
-    return -1;
 }
+void la(vector<string>command){
+    dataHashTableItem* item=data_ht_search(def::dataTable,command[2]);
+    int hashOfRd=getHashValue(command[1]);
+    registers[hashOfRd].value=item->byteSize;
+}
+
 #endif

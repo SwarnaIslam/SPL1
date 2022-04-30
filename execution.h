@@ -24,13 +24,16 @@ void startExecution(string pathName){
     getInstruction(pathName);
 	//cout<<"success1"<<endl;
 	defineNumberOfInstruction(instruction.size());
+	defineRegisters();
+	defineOperators();
+	def::Memory.resize(100000000);
 	trim(instruction);
 	//cout<<"success2"<<endl;
     define();
 	//cout<<"success3"<<endl;
-	getLabel();
+	//getLabel();
 	//cout<<"successfully got label"<<endl;
-	defineProgramCounter();
+	//defineProgramCounter();
 	//cout<<"Successful defining PC"<<endl;
 	executeInstruction();
 	//cout<<"SuccessFull execution"<<endl;

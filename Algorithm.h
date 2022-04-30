@@ -2,9 +2,12 @@
 #define ALGORITHM_H
 #include<iostream>
 #include<math.h>
+#include"debugger.h"
 using namespace std;
 vector<int>data_index;
 vector<int>text_index;
+vector<long long>stacking;
+long long dataBase=0x10010000;
 long long getHashValue(string operation){
     int p = 37;
     long long mod = 10009;
@@ -16,9 +19,10 @@ long long getHashValue(string operation){
     }
     return (hashValue%mod + mod) % mod;
 }
+
 struct dataHashTableItem{
     string key="";
-    int size=0;
+    long long byteSize=0;
     int *array;
 };
 struct textHashTableItem{
@@ -158,26 +162,25 @@ void handle_textCollison(textHashTable* table, long long index, textHashTableIte
     }
 }
 
-dataHashTableItem* create_dataItem(string key, int size, int* array){
+dataHashTableItem* create_dataItem(string key, int size, int*array){
     dataHashTableItem *item=new dataHashTableItem;
-    //data_ht_item *item=(data_ht_item*)malloc(sizeof(data_ht_item));
-
     item->key=key;
-    item->size=size;
+    item->byteSize=dataBase;
     item->array=array;
-    //cout<<item->array[0]<<endl;
+    dataBase+=size;
     return item;
 }
 textHashTableItem* create_textItem(string key, int address, int line){
     textHashTableItem *item=new textHashTableItem;
 
     item->key=key;
-    item->address=address;
+    item->address=0x00400000+address*4;
     item->line=line;
     return item;
 }
 
-void data_ht_insert(dataHashTable *table, string key,int size,int* array){
+void data_ht_insert(dataHashTable *table, string key,int size,int*array){
+    //cout<<size<<endl;
     dataHashTableItem* item=create_dataItem(key,size,array);
 
     long long index=getHashValue(key);
@@ -189,7 +192,7 @@ void data_ht_insert(dataHashTable *table, string key,int size,int* array){
     }
     else{
         if(curr_item->key==key){
-            curr_item->size=size;
+            curr_item->byteSize=size;
             curr_item->array=array;
         }
         else{
@@ -200,7 +203,7 @@ void data_ht_insert(dataHashTable *table, string key,int size,int* array){
 
 void text_ht_insert(textHashTable *table, string key,int address,int line){
     textHashTableItem* item=create_textItem(key, address, line);
-
+    //cout<<address<<endl;
     long long index=getHashValue(key);
     text_index.push_back(index);
 
@@ -220,23 +223,20 @@ void text_ht_insert(textHashTable *table, string key,int address,int line){
 
 void print_data_table(dataHashTable* table) {
     printf("\n-------------------\n");
-    int memory=0x10010000;
+    int memory=0;
     for (int i:data_index) {
         if (table->dataItems[i]) {
-            double size=table->dataItems[i]->size;
-            double p=ceil(size/4)*4;
+            long long size=table->dataItems[i]->byteSize;
             cout<<table->dataItems[i]->key<<" ";
-            printf("%#x\n",memory);
-            memory+=p;
+            printf("%#x\n",size);
             if (table->dataOverflowBuckets[i]) {
                 dataLinkedList* head = table->dataOverflowBuckets[i];
                 while (head) {
-                    size=head->dataItem->size;
-                    p=ceil(size/4)*4;
+                    size=head->dataItem->byteSize;
                     cout<<head->dataItem->key<<" ";
                     printf("%#x\n",memory);
                     head = head->next;
-                    memory+=p;
+                    memory+=size;
                 }
             }
             printf("\n");
@@ -246,14 +246,12 @@ void print_data_table(dataHashTable* table) {
 }
 void print_text_table(textHashTable* table) {
     printf("\n-------------------\n");
-    int memory=0x00400000 ;
     int pc=0;
     for (int i:text_index) {
         if (table->textItems[i]) {
             int line=table->textItems[i]->line;
-            pc=4*table->textItems[i]->address;
             cout<<table->textItems[i]->key<<" ";
-            printf("%#x, %d\n",memory+pc, table->textItems[i]->line);
+            printf("%#x, %d\n",table->textItems[i]->address, table->textItems[i]->line);
             if (table->textOverflowBuckets[i]) {
                 textLinkedList* head = table->textOverflowBuckets[i];
                 while (head) {
@@ -356,11 +354,12 @@ struct BST{
             if(temp->right!=NULL)free_children(temp->right);
             free(temp);
         }
-        // void printBST(BST* temp){
-        //     if(temp==NULL)return;
-        //     printBST(temp->left);
-        //     printBST(temp->right);
-        // }
+        void printBST(BST* temp){
+            if(temp==NULL)return;
+            printBST(temp->left);
+            printBST(temp->right);
+            cout<<temp->labelName<<" "<<temp->lineNumber<<endl;
+        }
 };
 
 #endif

@@ -4,14 +4,10 @@
 #include"definition.h"
 #include"rType.h"
 #include"iType.h"
-#include"psedo.h"
-#include"Algorithm.h"
+#include"jType.h"
 int perform(vector<string>command, int currLine){
     if(command[0]==("move")){
         move(command);
-    }
-    else if(command[0]==("li")){
-        li(command);
     }
     else if(command[0]==("syscall")){
         syscall(command);
@@ -21,6 +17,9 @@ int perform(vector<string>command, int currLine){
     }
     else if(command[0]==("addi")){
         addi(command);
+    }
+    else if(command[0]==("addiu")){
+        addiu(command);
     }
     else if(command[0]==("mul")){
         mul(command);
@@ -76,9 +75,6 @@ int perform(vector<string>command, int currLine){
     else if(command[0]==("sub")){
         sub(command);
     }
-    else if(command[0]==("abs")){
-        abs(command);
-    }
     else if(command[0]==("ori")){
         ori(command);
     }
@@ -97,8 +93,11 @@ int perform(vector<string>command, int currLine){
     else if(command[0]=="sltu"){
         sltu(command);
     }
-    else if(command[0]=="sgt"){
-        sgt(command);
+    else if(command[0]=="lw"){
+        lw(command);
+    }
+    else if(command[0]=="sw"){
+        sw(command);
     }
     else if(command[0]=="beq"){
         int newLine = beq(command);
@@ -109,17 +108,27 @@ int perform(vector<string>command, int currLine){
     else if(command[0]=="bne"){
         int newLine = bne(command);
         if(newLine>=0){
+            //cout<<newLine<<endl;
             return newLine;
         }
     }
-    else if(command[0]=="blt"){
-        int newLine = blt(command);
+    else if(command[0]=="la"){
+        la(command);
+    }
+    else if(command[0]=="jal"){
+        int newLine = jal(command,currLine);
         if(newLine>=0){
             return newLine;
         }
     }
-    else if(command[0]=="bgt"){
-        int newLine = bgt(command);
+    else if(command[0]=="j"){
+        int newLine = j(command);
+        if(newLine>=0){
+            return newLine;
+        }
+    }
+    else if(command[0]=="jr"){
+        int newLine = jr(command);
         if(newLine>=0){
             return newLine;
         }
@@ -127,18 +136,16 @@ int perform(vector<string>command, int currLine){
     return currLine;
 }
 void executeInstruction(){
+    def::executionStarted=true;
+   // cout<<"Starting execution"<<endl;
     
-    for(int i=def::textStart+1;i<def::textEnd;i++){
-        string tempOperator=def::trimmedInstruction[i][0];
-        if(tempOperator==""){
-            continue;
+    for(int i=0;i<def::trimLen;i++){
+        //cout<<def::trimmedInstruction[i].size()<<endl;
+        for(int j=0;j<def::trimmedInstruction[i].size();j++){
+            cout<<def::trimmedInstruction[i][j]<<" ";
         }
-    
-        bool operatorFound=def::operators->searchBST(def::operators,tempOperator);
-        if(operatorFound==true){
-            long long hashOfTempOp=getHashValue(tempOperator);
-            i=perform(def::trimmedInstruction[i],i);
-        }
+        cout<<endl;
+        i=perform(def::trimmedInstruction[i],i);
     }
     if(def::detectLabel!=NULL){
         def::detectLabel->free_children(def::detectLabel);

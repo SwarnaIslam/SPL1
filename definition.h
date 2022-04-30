@@ -7,7 +7,9 @@
 
 using namespace std;
 int k=0;
-
+extern void checkRegister(string tempReg);
+extern void extension(vector<string>command);
+extern bool isLabel(string tempLabel);
 namespace def{
     int PC=0;
     int numberOfInstruction=0;
@@ -15,9 +17,12 @@ namespace def{
     int textStart=0;
     int dataEnd=0;
     int textEnd=0;
+    int trimLen=0;
+    bool executionStarted=false;
     vector<string>trimmedInstruction[1000];
+    vector<int>Memory;
     BST<string,int> *operators;
-    BST<string, int>*detectLabel;
+    BST<string, int>*detectLabel=NULL;
     dataHashTable* dataTable;
     textHashTable* textTable;
 }
@@ -33,11 +38,16 @@ void defineRegisters(){
     for(int i=0;i<tempRegister.size();i++){
         long long hashValue=getHashValue(tempRegister[i]);
         registers[hashValue].regName=tempRegister[i];
+        if(tempRegister[i]=="$sp"){
+            registers[hashValue].value=0x15f6e100 ;
+            continue;
+        }
         registers[hashValue].value=0;
     }
+
 }
 void defineOperators(){
-    vector<string>tempOperators{"li","lui","la","add","sub","subu","addi","mul","mult","mflo","mfhi","div","sll","sllv","srl","srlv","sra","srav","and","or","ori","not","xor","nor","abs","andi","j","jal","bne","beq","blt","bgt","move","syscall","slt","slti","sltu","sgt"};
+    vector<string>tempOperators{"li","lui","la","lw","add","sub","subu","addi","mul","mult","mflo","mfhi","div","sll","sllv","srl","srlv","sra","srav","and","or","ori","not","xor","nor","abs","andi","j","jal","bne","beq","blt","bgt","move","syscall","slt","slti","sltu","sgt","j","jal","jr"};
     BST<string, int>*temp=NULL;
     for(string op: tempOperators){
 
@@ -50,52 +60,6 @@ void defineNumberOfInstruction(int lineOfCode){
     def::numberOfInstruction=lineOfCode;
 }
 
-int defineDataStart(){
-    int i=0;
-    int dataFlag=0;
-    int dataLine=-1;
-    string isData=".data";
-    
-    for(i=0;i<def::numberOfInstruction;i++){
-    
-        if(def::trimmedInstruction[i][0]!=""){
-            if(dataFlag== 1 && def::trimmedInstruction[i][0].c_str()==isData){
-                cout<<"More than one .data have been found!"<<endl;
-                exit(1);
-            }
-            if(def::trimmedInstruction[i][0].c_str()==isData){
-                dataFlag=1;
-                dataLine=i;
-            }
-        }
-    }
-    if(dataFlag==0){
-        cout<<".data section not found!"<<endl;
-        exit(1);
-    }
-    return dataLine;
-}
-int defineTextStart(){
-    int i=0;
-    int textFlag=0;
-    int textLine=-1;
-    string isText=".text";
-    for(i=0;i<def::numberOfInstruction;i++){
-        if(textFlag== 1 && def::trimmedInstruction[i][0].c_str()==isText){
-            cout<<"More than one .text have been found!"<<endl;
-            exit(1);
-        }
-        if(def::trimmedInstruction[i][0].c_str()==isText){
-            textFlag=1;
-            textLine=i;
-        }
-    }
-    if(textFlag==0){
-        cout<<".text section not found!"<<endl;
-        exit(1);
-    }
-    return textLine;
-}
 int sectionEndIndex(int start1, int start2){
     int end=-1;
     if(start1>start2){
@@ -112,95 +76,16 @@ int sectionEndIndex(int start1, int start2){
     return end;
 }
 void defineSectionIndex(){
-    def::dataStart=defineDataStart();
-    def::textStart=defineTextStart();
-
     def::dataEnd=sectionEndIndex(def::dataStart,def::textStart);
     def::textEnd=sectionEndIndex(def::textStart,def::dataStart);
 }
 
-void nextInstruction(int currInd){
-    string op=def::trimmedInstruction[currInd][0];
-    if(op=="li"){
-        string tempNumber=def::trimmedInstruction[currInd][2];
-        checkValid32BitInteger(tempNumber);
-        int number=stoi(tempNumber);
-        if(number<=32767 && number>=-32768){
-            k++;//addiu
-        }
-        else{
-            k+=2;//lui & ori
-        }
-    }
-    else if(op=="abs"){
-        k+=3;
-    }
-    else if(op=="blt"){
-        k+=2;
-    }
-    else if(op=="ori"){
-        string tempNumber=def::trimmedInstruction[currInd][3];
-        checkValid32BitInteger(tempNumber);
-        int number=stoi(tempNumber);
-        if(number<65536 && number>=0){
-            k++;// ori
-        }
-        else{
-            k+=3;//lui, ori & or
-        }
-    }
-    else{
-        k++;
-    }
-}
-bool isLabel(string tempLabel){
-    int labelIndex=tempLabel.find(':');
-    if(labelIndex>0&&labelIndex<tempLabel.size()){
-        tempLabel=tempLabel.substr(0,labelIndex);
-    }
-    bool labelFound=def::detectLabel->searchBST(def::detectLabel, tempLabel);
-    if(labelFound){
-        return true;
-    }
-    else{
-        return false;
-    }
-}
-void defineProgramCounter(){
-    def::textTable=createtextHashTable(CAPACITY);
-    for(int i=def::textStart+1;i<def::textEnd;i++){
-        string tempInstruction=def::trimmedInstruction[i][0];
-        //cout<<"Definition: "<<tempInstruction<<endl;
-        if(tempInstruction==""){
-            continue;
-        }
-        int labelIndex=tempInstruction.find(':');
-        if(labelIndex>0&&labelIndex<tempInstruction.size()){
-            tempInstruction=tempInstruction.substr(0,labelIndex);
-        }
-        bool labelFound=isLabel(tempInstruction);
-        bool operatorFound=def::operators->searchBST(def::operators,tempInstruction);
-        if(labelFound==true){
-            text_ht_insert(def::textTable,tempInstruction,k,i);
-        }
-        else if(operatorFound==false){
-            cout<<"Invalid operation in text section"<<endl;
-        }
-        else{
-            nextInstruction(i);
-        }
-    }
-    print_text_table(def::textTable);
-}
-void define(){
-	defineRegisters();
-    //cout<<"success defining reg"<<endl;
-    defineOperators();
-    //cout<<"success defining op"<<endl;
-    defineSectionIndex();
-    //cout<<"success defining sec in"<<endl;
-    //defineProgramCounter();
 
+
+void define(){
+	
+    defineSectionIndex();
+    
 }
 
 #endif

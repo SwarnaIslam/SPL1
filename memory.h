@@ -4,161 +4,152 @@
 #include"format.h"
 #include"Algorithm.h"
 #define CAPACITY 10009
-
+int memLen=0;
 int* getNumber(vector<string>dataLabel,int labelIndex, int arraySize){
     int i=0,j=0;
     int size=dataLabel.size();
     bool tokenFound=false;
     int *tempArray=(int*)calloc(arraySize,sizeof(int));
     for(i=labelIndex;i<size;i++){
+        //cout<<"memory: "<<dataLabel[i]<<endl;
         checkValid32BitInteger(dataLabel[i]);
         tempArray[j++]=stoi(dataLabel[i]);
     }
     return tempArray;
 }
-
-void findDataLabel(){
-    
-    def::dataTable=createDataHashTable(CAPACITY);
-
-    for(int i=def::dataStart+1;i<def::dataEnd;i++){
-        int labelFound=-1,j;
-        int size=def::trimmedInstruction[i].size();
+void pushStaticData(int *array, int arraySize){
+    for(int i=0;i<arraySize;i++){
+        def::Memory[memLen++]=array[i];
+        //cout<<array[i]<<endl;
+    }
+    //cout<<def::Memory.size()<<endl;
+}
+void findDataLabel(vector<string>command){
+        //cout<<command[0]<<endl;
+        int labelFound=-1,j=0;
+        int size=command.size();
         bool labelFlag=false;
-        if(def::trimmedInstruction[i][0]==""){
-            continue;
-        }
         for(j=0;j<size;j++){
-            int tokenLength=def::trimmedInstruction[i][j].length();
-            labelFound=def::trimmedInstruction[i][j].find(':');
+            int tokenLength=command[j].length();
+            labelFound=command[j].find(':');
             if(labelFound>-1&&labelFound<tokenLength){
                 labelFlag=true;
                 break;
             }
         }
         if(labelFlag==false){
-            reportAndExit("Unknown operation in .data section",i);
+            reportAndExit("Unknown operation in .data section");
         }
         string tempLabel="";
-        string afterLabel=def::trimmedInstruction[i][j].substr(labelFound+1);
+        string afterLabel=command[j].substr(labelFound+1);
         if(j==0){
-            tempLabel=def::trimmedInstruction[i][0].substr(0,labelFound);
+            tempLabel=command[0].substr(0,labelFound);
         }
         else if(j==1){
-            tempLabel=def::trimmedInstruction[i][0];
+            tempLabel=command[0];
         }
         else{
-            reportAndExit("Wrong format of label, seperate words must be connected with a underscore",i);
+            reportAndExit("Wrong format of label, seperate words must be connected with a underscore");
         }
         if(j==1&&labelFound!=0){
-            reportAndExit("Wrong format of label, seperate words must be connected with a underscore",i);
+            reportAndExit("Wrong format of label, seperate words must be connected with a underscore");
         }
         else if(data_ht_search(def::dataTable,tempLabel)!=NULL){
-            reportAndExit("Label "+tempLabel+" was defined before",i);
+            reportAndExit("Label "+tempLabel+" was defined before");
         }
         else if((afterLabel!=".word"||afterLabel!=".space")&&afterLabel!=""){
-            reportAndExit("Invalid token after ':'",i);
+            reportAndExit("Invalid token after ':'");
         }
         else if(!isValidLabel(tempLabel)){
-            reportAndExit("Wrong format of label",i);
+            reportAndExit("Wrong format of label");
         }
         
         if(afterLabel==".word"||afterLabel==".space"){
             if(afterLabel==".word"){
-                int arraySize=def::trimmedInstruction[i].size()-j-1;
-                int *tempArray=getNumber(def::trimmedInstruction[i], j+1, arraySize);
-                //cout<<tempArray<<endl;
+                int arraySize=command.size()-j-1;
+
+                int *tempArray=getNumber(command, j+1, arraySize);
+                pushStaticData(tempArray,arraySize);
+                data_ht_insert(def::dataTable,tempLabel,arraySize*4,tempArray);
                 
             }
             else{
-                int arraySize=stoi(def::trimmedInstruction[i][j+1])/4;
+                int arraySize=ceil(stod(command[j+1])/4.0);
+
                 int* tempArray=(int*)calloc(arraySize, sizeof(int));
+                pushStaticData(tempArray,arraySize);
+                data_ht_insert(def::dataTable,tempLabel,arraySize*4,tempArray);
                 
             }
         }
-        else if(def::trimmedInstruction[i][j+1]==".word"||def::trimmedInstruction[i][j+1]==".space"){
-            if(def::trimmedInstruction[i][j+1]==".word"){
-                int arraySize=def::trimmedInstruction[i].size()-j-2;
+        else if(command[j+1]==".word"||command[j+1]==".space"){
+            if(command[j+1]==".word"){
+                int arraySize=command.size()-j-2;
                 
-                int *tempArray=getNumber(def::trimmedInstruction[i], j+2, arraySize);
+                int *tempArray=getNumber(command, j+2, arraySize);
+                pushStaticData(tempArray,arraySize);
                 data_ht_insert(def::dataTable,tempLabel,arraySize*4,tempArray);
             }
             else{
-                int arraySize=stoi(def::trimmedInstruction[i][j+2])/4;
+                int arraySize=ceil(stod(command[j+2])/4.0);
 
                 int* tempArray=(int*)calloc(arraySize, sizeof(int));
-                data_ht_insert(def::dataTable,tempLabel,stoi(def::trimmedInstruction[i][j+2]),tempArray);
+                pushStaticData(tempArray,arraySize);
+                data_ht_insert(def::dataTable,tempLabel,arraySize*4,tempArray);
             }
         }
         else{
-            reportAndExit("Expected directive after ':'",i);
+            reportAndExit("Expected directive after ':'");
         }
-    }
-    print_data_table(def::dataTable);
 }
-void findTextLabel(){
-
-    BST<string,int>*occurred=NULL;
-    
-    for(int i=def::textStart+1;i<def::textEnd;i++){
-    
+void findTextLabel(vector<string>command,int currIndex){
+       // cout<<command[0]<<endl;
         int labelFound=-1,j;
-        int size=def::trimmedInstruction[i].size();
+        int size=command.size();
         bool labelFlag=false;
-        if(def::trimmedInstruction[i][0]==""){
-            continue;
-        }
         for(j=0;j<size;j++){
-            int tokenLength=def::trimmedInstruction[i][j].length();
-            labelFound=def::trimmedInstruction[i][j].find(':');
+            int tokenLength=command[j].length();
+            labelFound=command[j].find(':');
             if(labelFound>-1&&labelFound<tokenLength){
                 labelFlag=true;
                 break;
             }
         }
-        if(labelFlag==false){
-            continue;
-        }
         string tempLabel="";
-        string afterLabel=def::trimmedInstruction[i][j].substr(labelFound+1);
+        string afterLabel=command[j].substr(labelFound+1);
         if(j+1<size){
-            reportAndExit("No instruction is expected after label name",i);
+            reportAndExit("No instruction is expected after label name");
         }
         if(j==0){
-            tempLabel=def::trimmedInstruction[i][0].substr(0,labelFound);
+            tempLabel=command[0].substr(0,labelFound);
         }
         else if(j==1){
-            tempLabel=def::trimmedInstruction[i][0];
+            tempLabel=command[0];
         }
         else{
-            reportAndExit("Wrong format of label",i);
+            reportAndExit("Wrong format of label");
         }
-        int prevIndex=occurred->searchBST(occurred,tempLabel);
+        int prevIndex=def::detectLabel->searchBST(def::detectLabel,tempLabel);
         if(j==1&&labelFound!=0){
-            reportAndExit("Wrong format of label",i);
+            reportAndExit("Wrong format of label");
         }
         else if(prevIndex!=0||data_ht_search(def::dataTable,tempLabel)!=NULL){
             reportAndExit("Label '"+tempLabel+"' was defined before",prevIndex);
         }
         else if(afterLabel!=""){
-            reportAndExit("No instruction is expected after label name",i);
+            reportAndExit("No instruction is expected after label name");
         }
         else if(!isValidLabel(tempLabel)){
-            reportAndExit("Wrong format of label",i);
+            reportAndExit("Wrong format of label");
         }
         else{
-            occurred=occurred->insertBST(tempLabel,i,occurred);
-        }  
-    }
-    def::detectLabel=occurred;
-    //print_text_table(def::textTable);
+            //cout<<"Creating label"<<endl;
+            def::detectLabel=def::detectLabel->insertBST(tempLabel,currIndex+1,def::detectLabel);
+        }
 }
 void getLabel(){
 
-    findDataLabel();
-    findTextLabel();
-
-    // data_ht_insert(table,"sample",10,vector<int>(10));
-    // data_ht_insert(table,"sample",10,vector<int>(20));
+    //findDataLabel();
+   // findTextLabel();
 }
 #endif

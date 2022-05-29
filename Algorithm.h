@@ -2,6 +2,8 @@
 #define ALGORITHM_H
 #include<iostream>
 #include<math.h>
+#include<sstream>
+#include<string>
 #include"debugger.h"
 using namespace std;
 vector<int>data_index;
@@ -223,6 +225,7 @@ void text_ht_insert(textHashTable *table, string key,int address,int line){
 
 void print_data_table(dataHashTable* table) {
     printf("\n-------------------\n");
+    cout<<"Static data: "<<endl;
     int memory=0;
     for (int i:data_index) {
         if (table->dataItems[i]) {
@@ -361,5 +364,6 @@ struct BST{
             cout<<temp->labelName<<" "<<temp->lineNumber<<endl;
         }
 };
+
 
 #endif

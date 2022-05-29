@@ -17,8 +17,8 @@ int main()
 	}
 	cout<<str<<"\n\n";
 	cout<<"Enter path name of the MIPS assembly file: "<<endl;
-	//cin>>pathName;
-	pathName="test.asm";
+	cin>>pathName;
+	
 	startExecution(pathName);
 	cout<<"\nReport: Operation completed successfully\n\n"<<endl;
 	return 0;

@@ -19,7 +19,7 @@ int j(vector<string>command){
 int jal(vector<string>command, int currIndex){
     textHashTableItem* item=text_ht_search(def::textTable, command[1]);
     int hashOfRd=getHashValue("$ra");
-    registers[hashOfRd].value=0x00400000+currIndex*4;
+    registers[hashOfRd].value=0x00400000+currIndex*4+4;
     int line=(item->address-0x00400000)/4;
     return line;
 }

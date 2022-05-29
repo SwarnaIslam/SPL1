@@ -20,6 +20,8 @@ void initialize(){
     strToEnum["bgt"]=BGT;
 }
 void absExtension(vector<string>command){
+    def::mapPseudo[def::trimLen].first=command;
+    def::mapPseudo[def::trimLen].second=3;
     def::trimmedInstruction[def::trimLen++]=vector<string>{"sra","$at",command[2],"31"};
     def::trimmedInstruction[def::trimLen++]=vector<string>{"xor",command[1], command[2],"$at"};
     def::trimmedInstruction[def::trimLen++]=vector<string>{"subu",command[1],command[1],"$at"};
@@ -28,28 +30,43 @@ void absExtension(vector<string>command){
 void liExtension(vector<string>command){
     int number=stoi(command[2]);
     if(number<=32767 && number>=-32768){
+        def::mapPseudo[def::trimLen].first=command;
+        def::mapPseudo[def::trimLen].second=1;
+
         def::trimmedInstruction[def::trimLen++]=vector<string>{"addiu",command[1],"$zero", command[2]};
     }
     else{
         int16_t lowerBits=number;
         int16_t higherBits=(number>>16);
 
+        def::mapPseudo[def::trimLen].first=command;
+        def::mapPseudo[def::trimLen].second=2;
+
         def::trimmedInstruction[def::trimLen++]=vector<string>{"lui","$at", to_string(higherBits)};
         def::trimmedInstruction[def::trimLen++]=vector<string>{"ori",command[1],"$at",to_string(lowerBits)};
     }
 }
 void moveExtension(vector<string>command){
+    def::mapPseudo[def::trimLen].first=command;
+    def::mapPseudo[def::trimLen].second=1;
+
     def::trimmedInstruction[def::trimLen++]=vector<string>{"add",command[1],"$zero", command[2]};
 }
 
 void oriExtension(vector<string>command){
     int number=stoi(command[3]);
     if(number<65536 && number>=0){
+        def::mapPseudo[def::trimLen].first=command;
+        def::mapPseudo[def::trimLen].second=1;
+
         def::trimmedInstruction[def::trimLen++]=vector<string>{"ori",command[1],command[2]};
     }
     else{
         int16_t lowerBits=number;
         int16_t higherBits=(number>>16);
+
+        def::mapPseudo[def::trimLen].first=command;
+        def::mapPseudo[def::trimLen].second=3;
 
         def::trimmedInstruction[def::trimLen++]=vector<string>{"lui","$at",to_string(higherBits)};
         def::trimmedInstruction[def::trimLen++]=vector<string>{"ori","$at","$at", to_string(lowerBits)};
@@ -57,13 +74,22 @@ void oriExtension(vector<string>command){
     }
 }
 void sgtExtension(vector<string>command){
+    def::mapPseudo[def::trimLen].first=command;
+    def::mapPseudo[def::trimLen].second=1;
+
     def::trimmedInstruction[def::trimLen++]=vector<string>{"slt",command[1],command[3],command[2]};
 }
 void bltExtension(vector<string>command){
+    def::mapPseudo[def::trimLen].first=command;
+    def::mapPseudo[def::trimLen].second=2;
+
     def::trimmedInstruction[def::trimLen++]=vector<string>{"slt","$at",command[1],command[2]};
     def::trimmedInstruction[def::trimLen++]=vector<string>{"bne","$at","$zero",command[3]};
 }
 void bgtExtension(vector<string>command){
+    def::mapPseudo[def::trimLen].first=command;
+    def::mapPseudo[def::trimLen].second=2;
+
     def::trimmedInstruction[def::trimLen++]=vector<string>{"slt","$at",command[2], command[1]};
     def::trimmedInstruction[def::trimLen++]=vector<string>{"bne","$at","$zero",command[3]};
 }

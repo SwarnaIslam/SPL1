@@ -37,26 +37,74 @@ vector<string>split(char unTrimmedInstruction[],int s){
     commaRemove(unTrimmedInstruction);
     int newLine=1;
     for(int i=0;i<len;i++){
-        if(unTrimmedInstruction[i]!=' '&&unTrimmedInstruction[i]!='\0'&&unTrimmedInstruction[i]!='\n'&&unTrimmedInstruction[i]!='\t'&&unTrimmedInstruction[i]!='\r'){
             string temp="";
             newLine=0;
             for(int j=i;j<len;j++){
                 if(unTrimmedInstruction[j]!=' '&&unTrimmedInstruction[j]!='\0'&&unTrimmedInstruction[j]!='\n'&&unTrimmedInstruction[j]!='\t'&&unTrimmedInstruction[j]!='\r'){
                     //cout<<temp<<endl;
                     temp.push_back(unTrimmedInstruction[j]);
+                    i++;
                 }
                 else{
                     trimmedInstruction.push_back(temp);
-                    i=j;
                     break;
                 }
             }
-        }
+            if(i==len)trimmedInstruction.push_back(temp);
     }
-    if(newLine){
-        trimmedInstruction.push_back("");
-    }
+    
     return trimmedInstruction;
+}
+string stringStrip(string str){
+    int i=0,j=str.length()-1;
+    while((str[i]==' '||str[i]=='\t'||str[i]=='\n'||str[i]=='\r'||str[i]=='\0')&&i<=j){
+        i++;
+    }
+    while((str[j]==' '||str[j]=='\t'||str[j]=='\n'||str[j]=='\r'||str[j]=='\0')&&j>=i){
+        j--;
+    }
+    string tempStr="";
+    for(int k=i;k<=j;k++){
+        tempStr+=str[k];
+    }
+    return tempStr;
+}
+void getDataLabel(vector<string>instruction){
+    for(int i=def::dataStart+1;i<def::numberOfInstruction;i++){
+        string token=stringStrip(instruction[i]);
+        int len=token.length();
+        if(len==0)continue;
+        if(token==".text")break;
+
+        char tempIns[len+1]={};
+		for(int j=0;j<len;j++){
+			tempIns[j]=token[j];
+		}
+        
+        vector<string>temp=split(tempIns,len);
+        for(int k=0;k<temp.size();k++)cout<<temp[k]<<endl;
+        storeDataLabel(temp);
+	}
+    print_data_table(def::dataTable);
+}
+void getTextLabel(vector<string>instruction){
+    for(int i=def::textStart+1;i<def::numberOfInstruction;i++){
+		string token=stringStrip(instruction[i]);
+        int len=token.length();
+        if(len==0)continue;
+
+        int labelFound=token.find(':');
+
+        if(labelFound<0||labelFound>=len)continue;
+        if(token==".data")break;
+        //cout<<labelFound<<endl;
+        char tempIns[len+1]={};
+		for(int j=0;j<len;j++){
+			tempIns[j]=token[j];
+		}
+        vector<string>temp=split(tempIns,len);
+        storeTextLabel(temp,i);
+	}
 }
 void labelFind(vector<string>instruction){
     bool dataFound=false;
@@ -65,10 +113,11 @@ void labelFind(vector<string>instruction){
     def::dataTable=createDataHashTable(CAPACITY);
     BST<string,int>*occurred=NULL;
     for(int i=0;i<def::numberOfInstruction;i++){
-		int InsLength=instruction[i].length()+1;
-        if(InsLength==1)continue;
+        string token=stringStrip(instruction[i]);
+		int InsLength=token.length();
+        if(InsLength==0)continue;
 
-        string token=instruction[i].substr(0, InsLength-1);
+        //string token=instruction[i].substr(0, InsLength-1);
         if(token!=".data"&&token!=".text"&&dataFound==false&&textFound==false){
             reportAndExit(".data or .text expected");
         }
@@ -87,66 +136,31 @@ void labelFind(vector<string>instruction){
             textFound=true;
         }
 	}
-    for(int i=def::dataStart+1;i<def::numberOfInstruction;i++){
-		int InsLength=instruction[i].length()+1;
-        if(InsLength==1)continue;
-        string token=instruction[i].substr(0, InsLength-1);
-
-        if(token==".text")break;
-
-        char tempIns[InsLength];
-		for(int j=0;j<InsLength;j++){
-			tempIns[j]=instruction[i][j];
-		}
-        vector<string>temp=split(tempIns,InsLength);
-        findDataLabel(temp);
-	}
-    print_data_table(def::dataTable);
-    for(int i=def::textStart+1;i<def::numberOfInstruction;i++){
-		int InsLength=instruction[i].length()+1;
-        int labelFound=-1;
-        if(InsLength==1)continue;
-
-        string token=instruction[i].substr(0, InsLength-1);
-        labelFound=token.find(':');
-
-        if(labelFound<0||labelFound>=InsLength-1)continue;
-        if(token==".data")break;
-        //cout<<labelFound<<endl;
-        char tempIns[InsLength];
-		for(int j=0;j<InsLength;j++){
-			tempIns[j]=instruction[i][j];
-		}
-        vector<string>temp=split(tempIns,InsLength);
-        findTextLabel(temp,i);
-	}
-    def::detectLabel->printBST(def::detectLabel);
+    getDataLabel(instruction);
+    getTextLabel(instruction);
+    
 }
 void trim(vector<string>instruction){
     labelFind(instruction);
     def::textTable=createtextHashTable(CAPACITY);
 	for(int i=def::textStart+1;i<def::numberOfInstruction;i++){
-		int InsLength=instruction[i].length()+1;
-        if(InsLength==1)continue;
+		string token=stringStrip(instruction[i]);
+		int InsLength=token.length();
+        if(InsLength==0)continue;
 
-        string token=instruction[i].substr(0, InsLength-1);
-        int labelFound=token.find(':');
-        if(labelFound>=0&&labelFound<=InsLength){
+        int colonIndex=token.find(':');
+        if(colonIndex>=0&&colonIndex<InsLength){
             token=token.substr(0,token.length()-1);
-            token=removeWhiteSpace(token);
-            //cout<<"Spliter: "<<token<<endl;
-            text_ht_insert(def::textTable,token,def::trimLen-1,i);
+            text_ht_insert(def::textTable,token,def::trimLen,i+1);
             continue;
         }
-		char tempIns[InsLength];
+		char tempIns[InsLength+1];
 		for(int j=0;j<InsLength;j++){
-			tempIns[j]=instruction[i][j];
+			tempIns[j]=token[j];
 		}
-        //cout<<tempIns<<" "<<InsLength<<endl;
+        
 		vector<string>temp=split(tempIns,InsLength);
-        //cout<<temp.size()<<endl;
-        if(temp[0]!="")
-            preprocess(temp);
+        preprocess(temp);
 	}
     print_text_table(def::textTable);
 }

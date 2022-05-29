@@ -7,9 +7,10 @@
 
 using namespace std;
 int k=0;
-extern void checkRegister(string tempReg);
-extern void extension(vector<string>command);
-extern bool isLabel(string tempLabel);
+struct pseudoTranslate{
+    vector<string>first;
+    int second=0;
+};
 namespace def{
     int PC=0;
     int numberOfInstruction=0;
@@ -25,6 +26,7 @@ namespace def{
     BST<string, int>*detectLabel=NULL;
     dataHashTable* dataTable;
     textHashTable* textTable;
+    map<int, struct pseudoTranslate>mapPseudo;
 }
 struct Reg{
     string regName="";
@@ -82,9 +84,12 @@ void defineSectionIndex(){
 
 
 
-void define(){
-	
-    defineSectionIndex();
+void define(int LOC){
+    defineNumberOfInstruction(LOC);
+	defineRegisters();
+	defineOperators();
+	def::Memory.resize(100000000);
+
     
 }
 

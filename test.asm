@@ -1,14 +1,19 @@
 .data
-num1: .space 8
-num2: .word 12 3 4
-num3: .space 5
-num4: .word 1
-.text
-lbl1:
-li $t1 4
-la $t0 num2
-lw $a0 num2($t1)
-li $v0 1
-syscall
+	
+	num1: .word 2
 
-exit:
+	array1: .space 7
+
+	num2 : .word 3
+.text
+
+	main:
+
+	li $v0 1
+	lw $a0 num1
+	syscall
+
+	main2:
+
+	main3:
+		

@@ -183,14 +183,6 @@ void swPre(vector<string>command){
         if(item==NULL){
             isNumber(temp);
         }
-        // if(base+offset<0x10010000){
-        //     reportAndExit("Address out of bound 0x10010000");
-        // }
-        
-        // int index=(base+offset)-0x10010000;
-        // if(index%4){
-        //     reportAndExit("Store address not aligned on word boundary");
-        // }
     }
     else{
         dataHashTableItem* item=data_ht_search(def::dataTable,command[2]);

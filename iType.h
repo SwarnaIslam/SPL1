@@ -110,7 +110,6 @@ void lw(vector<string>command){
         int closingFound=command[2].find(')');
 
         string tempRegister=command[2].substr(openingFound+1,closingFound-openingFound-1);
-        checkValidSource(tempRegister);
 
         string temp=command[2].substr(0, openingFound);
 
@@ -153,7 +152,6 @@ void sw(vector<string>command){
         int closingFound=command[2].find(')');
 
         string tempRegister=command[2].substr(openingFound+1,closingFound-openingFound-1);
-        checkValidSource(tempRegister);
 
         string temp=command[2].substr(0, openingFound);
 

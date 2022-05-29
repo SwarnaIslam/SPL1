@@ -1,6 +1,7 @@
 #ifndef OPERATOR_H
 #define OPERATOR_H
 #include"format.h"
+#include"display.h"
 #include"definition.h"
 #include"rType.h"
 #include"iType.h"
@@ -102,6 +103,7 @@ int perform(vector<string>command, int currLine){
     else if(command[0]=="beq"){
         int newLine = beq(command);
         if(newLine>=0){
+            newLine--;
             return newLine;
         }
     }
@@ -109,6 +111,7 @@ int perform(vector<string>command, int currLine){
         int newLine = bne(command);
         if(newLine>=0){
             //cout<<newLine<<endl;
+            newLine--;
             return newLine;
         }
     }
@@ -118,18 +121,21 @@ int perform(vector<string>command, int currLine){
     else if(command[0]=="jal"){
         int newLine = jal(command,currLine);
         if(newLine>=0){
+            newLine--;
             return newLine;
         }
     }
     else if(command[0]=="j"){
         int newLine = j(command);
         if(newLine>=0){
+            newLine--;
             return newLine;
         }
     }
     else if(command[0]=="jr"){
         int newLine = jr(command);
         if(newLine>=0){
+            newLine--;
             return newLine;
         }
     }
@@ -141,11 +147,22 @@ void executeInstruction(){
     
     for(int i=0;i<def::trimLen;i++){
         //cout<<def::trimmedInstruction[i].size()<<endl;
+        getchar();
+        if(def::mapPseudo[i].second!=0){
+            cout<<"The next "<<def::mapPseudo[i].second<<" instruction(s) is/are the translation(s) of: ";
+            for(int j=0;j<def::mapPseudo[i].first.size();j++){
+                cout<<def::mapPseudo[i].first[j]<<" ";
+            }
+            cout<<endl;
+        }
+        cout<<"PC: ";
+        printf("%#x\n", 0x00400000+i*4);
         for(int j=0;j<def::trimmedInstruction[i].size();j++){
             cout<<def::trimmedInstruction[i][j]<<" ";
         }
         cout<<endl;
         i=perform(def::trimmedInstruction[i],i);
+        display();
     }
     if(def::detectLabel!=NULL){
         def::detectLabel->free_children(def::detectLabel);

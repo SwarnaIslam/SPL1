@@ -1,5 +1,6 @@
 #ifndef FORMAT_H
 #define FORMAT_H
+#include<sstream>
 #include"definition.h"
 #include"math.h"
 bool isLabel(string tempLabel){
@@ -74,4 +75,5 @@ bool isValidLabel(string token){
     }
     return true;
 }
+
 #endif

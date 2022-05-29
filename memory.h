@@ -24,15 +24,15 @@ void pushStaticData(int *array, int arraySize){
     }
     //cout<<def::Memory.size()<<endl;
 }
-void findDataLabel(vector<string>command){
+void storeDataLabel(vector<string>command){
         //cout<<command[0]<<endl;
-        int labelFound=-1,j=0;
+        int colonIndex=-1,j=0;
         int size=command.size();
         bool labelFlag=false;
         for(j=0;j<size;j++){
             int tokenLength=command[j].length();
-            labelFound=command[j].find(':');
-            if(labelFound>-1&&labelFound<tokenLength){
+            colonIndex=command[j].find(':');
+            if(colonIndex>-1&&colonIndex<tokenLength){
                 labelFlag=true;
                 break;
             }
@@ -41,9 +41,9 @@ void findDataLabel(vector<string>command){
             reportAndExit("Unknown operation in .data section");
         }
         string tempLabel="";
-        string afterLabel=command[j].substr(labelFound+1);
+        string afterLabel=command[j].substr(colonIndex+1);
         if(j==0){
-            tempLabel=command[0].substr(0,labelFound);
+            tempLabel=command[0].substr(0,colonIndex);
         }
         else if(j==1){
             tempLabel=command[0];
@@ -51,7 +51,7 @@ void findDataLabel(vector<string>command){
         else{
             reportAndExit("Wrong format of label, seperate words must be connected with a underscore");
         }
-        if(j==1&&labelFound!=0){
+        if(j==1&&colonIndex!=0){
             reportAndExit("Wrong format of label, seperate words must be connected with a underscore");
         }
         else if(data_ht_search(def::dataTable,tempLabel)!=NULL){
@@ -102,7 +102,7 @@ void findDataLabel(vector<string>command){
             reportAndExit("Expected directive after ':'");
         }
 }
-void findTextLabel(vector<string>command,int currIndex){
+void storeTextLabel(vector<string>command,int currIndex){
        // cout<<command[0]<<endl;
         int labelFound=-1,j;
         int size=command.size();
@@ -146,10 +146,5 @@ void findTextLabel(vector<string>command,int currIndex){
             //cout<<"Creating label"<<endl;
             def::detectLabel=def::detectLabel->insertBST(tempLabel,currIndex+1,def::detectLabel);
         }
-}
-void getLabel(){
-
-    //findDataLabel();
-   // findTextLabel();
 }
 #endif

@@ -139,11 +139,12 @@ int perform(vector<string>command, int currLine){
             return newLine;
         }
     }
+    else{
+        reportAndExit("Unknown operation");
+    }
     return currLine;
 }
 void executeInstruction(){
-    def::executionStarted=true;
-   // cout<<"Starting execution"<<endl;
     
     for(int i=0;i<def::trimLen;i++){
         //cout<<def::trimmedInstruction[i].size()<<endl;

@@ -6,8 +6,8 @@
 #include"debugger.h"
 #include"memory.h"
 using namespace std;
-int len=0;
-void commaRemove(char *untrimmedInstruction){
+
+void commaRemove(char *untrimmedInstruction, int len){
     int i=0;
     int f=-1;
     for(i=0;i<len;i++){
@@ -16,7 +16,7 @@ void commaRemove(char *untrimmedInstruction){
         }
     }
 }
-void commentRemove(char unTrimmedInstruction[]){
+void commentRemove(char unTrimmedInstruction[],int len){
     int f=-1;
     for(int i=0;i<len;i++){
         if(unTrimmedInstruction[i]=='#'){
@@ -30,15 +30,14 @@ void commentRemove(char unTrimmedInstruction[]){
         }
     }
 }
-vector<string>split(char unTrimmedInstruction[],int s){
+vector<string>split(char unTrimmedInstruction[],int len){
     vector<string>trimmedInstruction;
-    len=s;
-    commentRemove(unTrimmedInstruction);
-    commaRemove(unTrimmedInstruction);
-    int newLine=1;
+    commentRemove(unTrimmedInstruction,len);
+    commaRemove(unTrimmedInstruction,len);
+    //cout<<unTrimmedInstruction<<endl;
     for(int i=0;i<len;i++){
             string temp="";
-            newLine=0;
+            if(unTrimmedInstruction[i]==' '||unTrimmedInstruction[i]=='\0'||unTrimmedInstruction[i]=='\n'||unTrimmedInstruction[i]=='\t'||unTrimmedInstruction[i]=='\r')continue;
             for(int j=i;j<len;j++){
                 if(unTrimmedInstruction[j]!=' '&&unTrimmedInstruction[j]!='\0'&&unTrimmedInstruction[j]!='\n'&&unTrimmedInstruction[j]!='\t'&&unTrimmedInstruction[j]!='\r'){
                     //cout<<temp<<endl;
@@ -50,7 +49,7 @@ vector<string>split(char unTrimmedInstruction[],int s){
                     break;
                 }
             }
-            if(i==len)trimmedInstruction.push_back(temp);
+            if(i==len&&temp!="")trimmedInstruction.push_back(temp);
     }
     
     return trimmedInstruction;
@@ -82,7 +81,7 @@ void getDataLabel(vector<string>instruction){
 		}
         
         vector<string>temp=split(tempIns,len);
-        for(int k=0;k<temp.size();k++)cout<<temp[k]<<endl;
+    
         storeDataLabel(temp);
 	}
     print_data_table(def::dataTable);
@@ -150,7 +149,7 @@ void trim(vector<string>instruction){
 
         int colonIndex=token.find(':');
         if(colonIndex>=0&&colonIndex<InsLength){
-            token=token.substr(0,token.length()-1);
+            token=token.substr(0,colonIndex);
             text_ht_insert(def::textTable,token,def::trimLen,i+1);
             continue;
         }
@@ -162,6 +161,7 @@ void trim(vector<string>instruction){
 		vector<string>temp=split(tempIns,InsLength);
         preprocess(temp);
 	}
+    
     print_text_table(def::textTable);
 }
 #endif

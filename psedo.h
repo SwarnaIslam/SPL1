@@ -76,7 +76,6 @@ void oriExtension(vector<string>command){
 void sgtExtension(vector<string>command){
     def::mapPseudo[def::trimLen].first=command;
     def::mapPseudo[def::trimLen].second=1;
-
     def::trimmedInstruction[def::trimLen++]=vector<string>{"slt",command[1],command[3],command[2]};
 }
 void bltExtension(vector<string>command){

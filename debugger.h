@@ -8,7 +8,7 @@ void reportAndExit(string errorMessage){
     exit(1);
 }
 void reportAndExit(string errorMessage, int line){
-    cout<<"Error: "<<errorMessage<<" at line "<<line+1<<endl;
+    cout<<"Error: "<<errorMessage<<" at line "<<line<<endl;
     exit(1);
 }
 void warning(string errorMessage, string instructionLine=""){

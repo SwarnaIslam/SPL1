@@ -116,7 +116,7 @@ void lw(vector<string>command){
         dataHashTableItem* item=data_ht_search(def::dataTable,temp);
         int hashOfRs=getHashValue(tempRegister);
         if(item!=NULL){
-            base=item->byteSize;
+            base=item->byteAddress;
             offset=registers[hashOfRs].value;
         }
         else{
@@ -127,7 +127,7 @@ void lw(vector<string>command){
     }
     else{
         dataHashTableItem* item=data_ht_search(def::dataTable,command[2]);
-        base=item->byteSize;
+        base=item->byteAddress;
     }
     if(base+offset<0x10010000|| base+offset>=0x15f6e100){
         reportAndExit("Address out of bound 0x10010000");
@@ -158,7 +158,7 @@ void sw(vector<string>command){
         dataHashTableItem* item=data_ht_search(def::dataTable,temp);
         int hashOfRd=getHashValue(tempRegister);
         if(item!=NULL){
-            base=item->byteSize;
+            base=item->byteAddress;
             offset=registers[hashOfRd].value;
         }
         else{
@@ -169,7 +169,7 @@ void sw(vector<string>command){
     }
     else{
         dataHashTableItem* item=data_ht_search(def::dataTable,command[2]);
-        base=item->byteSize;
+        base=item->byteAddress;
     }
     if(base+offset<0x10010000||base+offset>=0x15f6e100){
         reportAndExit("Address out of bound 0x10010000");
@@ -187,7 +187,7 @@ void sw(vector<string>command){
 void la(vector<string>command){
     dataHashTableItem* item=data_ht_search(def::dataTable,command[2]);
     int hashOfRd=getHashValue(command[1]);
-    registers[hashOfRd].value=item->byteSize;
+    registers[hashOfRd].value=item->byteAddress;
 }
 
 #endif

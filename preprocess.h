@@ -17,8 +17,11 @@ int preprocess(vector<string>command){
     else if(command[0]==("syscall")){
         syscallPre(command);
     }
-    else if(command[0]==("add")||command[0]=="mul"||command[0]=="sllv"||command[0]=="srlv"||command[0]=="srav"||command[0]=="and"||command[0]=="or"||command[0]=="xor"||command[0]=="nor"||command[0]=="sub"||command[0]=="subu"||command[0]=="slt"||command[0]=="sltu"||command[0]=="sgt"){
+    else if(command[0]==("add")||command[0]=="mul"||command[0]=="sllv"||command[0]=="srlv"||command[0]=="srav"||command[0]=="and"||command[0]=="or"||command[0]=="xor"||command[0]=="nor"||command[0]=="sub"||command[0]=="subu"||command[0]=="slt"||command[0]=="sltu"){
         generalPurposePre(command);
+    }
+    else if(command[0]=="sgt"){
+        sgtPre(command);
     }
     else if(command[0]==("addi")){
         addiPre(command);

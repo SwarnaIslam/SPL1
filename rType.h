@@ -103,8 +103,15 @@ void mul(vector<string>command){
 
     int32_t valRs=registers[hashOfRs].value;
     int32_t valRt=registers[hashOfRt].value;
-    int32_t valRd=valRs*valRt;
-    registers[hashOfRd].value=valRd;
+    int64_t result=(int64_t)valRs*(int64_t)valRt;
+
+    LO.regName="$LO";
+    LO.value=result;
+
+    HI.regName="$HI";
+    HI.value=(result>>32);
+
+    registers[hashOfRd].value=LO.value;
     //cout<<"Multiplication: "<<valRd<<endl;
 }
 
@@ -203,9 +210,7 @@ void srlv(vector<string>command){
         reportAndExit("Shift amount must be between 0 to 31");
     }     
     unsigned  int valOfRs=registers[hashOfRs].value;    
-    registers[hashOfRd].value=(valOfRs>>shift_amount);
-    registers[hashOfRd].regName=command[1];
-    //cout<<"Sll result: "<<registers[hashOfRd].value<<" "<<valOfRs<<endl;                                                                                                                                                                                                                                                                                                                         
+    registers[hashOfRd].value=(valOfRs>>shift_amount);                                                                                                                                                                                                                                                                                                                      
 }
 void sra(vector<string>command){
     long long hashOfRd=getHashValue(command[1]);
@@ -218,8 +223,7 @@ void sra(vector<string>command){
     }     
     int32_t valOfRs=registers[hashOfRs].value; 
     int32_t valOfRd=  (valOfRs>>shift_amount); 
-    registers[hashOfRd].value=valOfRd;
-    registers[hashOfRd].regName=command[1];                                                                                                                                                                                                                                                                                                                   
+    registers[hashOfRd].value=valOfRd;                                                                                                                                                                                                                                                                                                                
 }
 void srav(vector<string>command){
     long long hashOfRd=getHashValue(command[1]);

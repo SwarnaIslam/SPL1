@@ -76,7 +76,13 @@ void sllPre(vector<string>command){
     }     
     def::trimmedInstruction[def::trimLen++]=command;                                                                                                                                                                                                                                                                                                                     
 }
-
+void sgtPre(vector<string>command){
+    if(command.size()!=4){
+        reportAndExit("Invalid operation in text section");
+    }
+    checkValidReg(command[1],command[2],command[3]);
+    sgtExtension(command);
+}
 void srlPre(vector<string>command){
     if(command.size()!=4){
         reportAndExit("Invalid operation in text section");

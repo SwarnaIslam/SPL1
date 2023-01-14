@@ -70,7 +70,7 @@ void storeDataLabel(vector<string>command){
 
                 int *tempArray=getNumber(command, j+1, arraySize);
                 pushStaticData(tempArray,arraySize);
-                data_ht_insert(def::dataTable,tempLabel,arraySize*4,tempArray);
+                data_ht_insert(def::dataTable,tempLabel,arraySize*4);
                 
             }
             else{
@@ -78,7 +78,7 @@ void storeDataLabel(vector<string>command){
 
                 int* tempArray=(int*)calloc(arraySize, sizeof(int));
                 pushStaticData(tempArray,arraySize);
-                data_ht_insert(def::dataTable,tempLabel,arraySize*4,tempArray);
+                data_ht_insert(def::dataTable,tempLabel,arraySize*4);
                 
             }
         }
@@ -88,14 +88,14 @@ void storeDataLabel(vector<string>command){
                 
                 int *tempArray=getNumber(command, j+2, arraySize);
                 pushStaticData(tempArray,arraySize);
-                data_ht_insert(def::dataTable,tempLabel,arraySize*4,tempArray);
+                data_ht_insert(def::dataTable,tempLabel,arraySize*4);
             }
             else{
                 int arraySize=ceil(stod(command[j+2])/4.0);
 
                 int* tempArray=(int*)calloc(arraySize, sizeof(int));
                 pushStaticData(tempArray,arraySize);
-                data_ht_insert(def::dataTable,tempLabel,arraySize*4,tempArray);
+                data_ht_insert(def::dataTable,tempLabel,arraySize*4);
             }
         }
         else{
@@ -103,7 +103,7 @@ void storeDataLabel(vector<string>command){
         }
 }
 void storeTextLabel(vector<string>command,int currIndex){
-       // cout<<command[0]<<endl;
+        
         int labelFound=-1,j;
         int size=command.size();
         bool labelFlag=false;

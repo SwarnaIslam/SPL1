@@ -9,7 +9,7 @@ using namespace std;
 vector<int>data_index;
 vector<int>text_index;
 vector<long long>stacking;
-long long dataBase=0x10010000;
+long long baseOfData=0x10010000;
 long long getHashValue(string operation){
     int p = 37;
     long long mod = 10009;
@@ -24,8 +24,7 @@ long long getHashValue(string operation){
 
 struct dataHashTableItem{
     string key="";
-    long long byteSize=0;
-    int *array;
+    long long byteAddress=0;
 };
 struct textHashTableItem{
     string key;
@@ -164,12 +163,11 @@ void handle_textCollison(textHashTable* table, long long index, textHashTableIte
     }
 }
 
-dataHashTableItem* create_dataItem(string key, int size, int*array){
+dataHashTableItem* create_dataItem(string key, int size){
     dataHashTableItem *item=new dataHashTableItem;
     item->key=key;
-    item->byteSize=dataBase;
-    item->array=array;
-    dataBase+=size;
+    item->byteAddress=baseOfData;
+    baseOfData+=size;
     return item;
 }
 textHashTableItem* create_textItem(string key, int address, int line){
@@ -181,9 +179,9 @@ textHashTableItem* create_textItem(string key, int address, int line){
     return item;
 }
 
-void data_ht_insert(dataHashTable *table, string key,int size,int*array){
+void data_ht_insert(dataHashTable *table, string key,int size){
     //cout<<size<<endl;
-    dataHashTableItem* item=create_dataItem(key,size,array);
+    dataHashTableItem* item=create_dataItem(key,size);
 
     long long index=getHashValue(key);
     data_index.push_back(index);
@@ -194,8 +192,7 @@ void data_ht_insert(dataHashTable *table, string key,int size,int*array){
     }
     else{
         if(curr_item->key==key){
-            curr_item->byteSize=size;
-            curr_item->array=array;
+            curr_item->byteAddress=size;
         }
         else{
             handle_dataCollison(table, index,item);
@@ -226,20 +223,18 @@ void text_ht_insert(textHashTable *table, string key,int address,int line){
 void print_data_table(dataHashTable* table) {
     printf("\n-------------------\n");
     cout<<"Static data: "<<endl;
-    int memory=0;
     for (int i:data_index) {
         if (table->dataItems[i]) {
-            long long size=table->dataItems[i]->byteSize;
+            long long size=table->dataItems[i]->byteAddress;
             cout<<table->dataItems[i]->key<<" ";
             printf("%#x\n",size);
             if (table->dataOverflowBuckets[i]) {
                 dataLinkedList* head = table->dataOverflowBuckets[i];
                 while (head) {
-                    size=head->dataItem->byteSize;
+                    size=head->dataItem->byteAddress;
                     cout<<head->dataItem->key<<" ";
-                    printf("%#x\n",memory);
+                    printf("%#x\n",size);
                     head = head->next;
-                    memory+=size;
                 }
             }
             printf("\n");

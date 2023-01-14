@@ -19,8 +19,8 @@ namespace def{
     int dataEnd=0;
     int textEnd=0;
     int trimLen=0;
-    bool executionStarted=false;
-    vector<string>trimmedInstruction[1000];
+    
+    vector<string>trimmedInstruction[10000];
     vector<int>Memory;
     BST<string,int> *operators;
     BST<string, int>*detectLabel=NULL;
